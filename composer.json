@@ -1,6 +1,11 @@
 {
     "require": {
-		"php": ">=7.0"
+		"php": ">=7.0-dev",
         "nikic/php-parser": "^1.2.1"
-    }
+    },
+	"autoload": {
+		"psr-4": {
+			"TypeUtil\\": "src/"
+		}
+	}
 }

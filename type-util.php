@@ -1,24 +1,14 @@
-<?php
-declare(strict_types=1);
-error_reporting(E_ALL);
+<?php declare(strict_types=1);
 
+namespace TypeUtil;
+
+use PhpParser;
 use PhpParser\Node;
 use PhpParser\Node\Stmt;
 
-require __DIR__ . '/lib/bootstrap.php';
+error_reporting(E_ALL);
 
-trait NoDynamicProperties {
-    public function __get($name) {
-        $this->throwDynamicPropertyError($name);
-    }
-    public function __set($name, $value) {
-        $this->throwDynamicPropertyError($name);
-    }
-
-    private function throwDynamicPropertyError(string $name) {
-        throw new RuntimeException("Property \"$name\" does not exist");
-    }
-}
+require __DIR__ . '/vendor/autoload.php';
 
 class Type {
     use NoDynamicProperties;
@@ -156,8 +146,8 @@ class Context {
 
     private function getReflectionTypeInfo(string $class, string $method) /* : ?TypeInfo */ {
         try {
-            $r = new ReflectionMethod($class, $method);
-        } catch (Exception $e) {
+            $r = new \ReflectionMethod($class, $method);
+        } catch (\Exception $e) {
             return null;
         }
 
@@ -534,11 +524,11 @@ function strContains(string $haystack, string $needle) : bool {
     return strpos($haystack, $needle) !== false;
 }
 
-function phpFilesInDirs(array $dirs) : Generator {
+function phpFilesInDirs(array $dirs) : \Generator {
     foreach ($dirs as $dir) {
-        $it = new RecursiveIteratorIterator(
-            new RecursiveDirectoryIterator($dir),
-            RecursiveIteratorIterator::LEAVES_ONLY
+        $it = new \RecursiveIteratorIterator(
+            new \RecursiveDirectoryIterator($dir),
+            \RecursiveIteratorIterator::LEAVES_ONLY
         );
         foreach ($it as $file) {
             if (!$file->isFile()) {
@@ -554,7 +544,7 @@ function phpFilesInDirs(array $dirs) : Generator {
     }
 }
 
-function astsForFiles(PhpParser\Parser $parser, Traversable $files) : Generator {
+function astsForFiles(PhpParser\Parser $parser, \Traversable $files) : \Generator {
     foreach ($files as $file) {
         $path = $file->getPathName();
         $code = file_get_contents($path);
@@ -571,7 +561,7 @@ function astsForFiles(PhpParser\Parser $parser, Traversable $files) : Generator 
 }
 
 function getContext(
-    TypeExtractor $extractor, NameResolver $nameResolver, Traversable $asts
+    TypeExtractor $extractor, NameResolver $nameResolver, \Traversable $asts
 ) : Context {
     $traverser = new PhpParser\NodeTraverser(false);
     $traverser->addVisitor($nameResolver);
@@ -590,7 +580,7 @@ function error(string $msg) {
     echo <<<HELP
 $msg
 
-Usage: php ./types.php add|remove dir1 dir2 ...
+Usage: php ./type-util.php add|remove dir1 dir2 ...
 
 NOTE: Will directly modify files, assumes that you're using VCS.
 
