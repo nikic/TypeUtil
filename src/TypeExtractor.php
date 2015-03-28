@@ -13,9 +13,9 @@ class TypeExtractor {
         $this->nameResolver = $nameResolver;
     }
 
-    public function extractTypeInfo(array $params, string $docComment) : TypeInfo {
+    public function extractFunctionInfo(array $params, string $docComment) : FunctionInfo {
         $namedParamTypes = $this->getNamedParamTypes($docComment);
-        return new TypeInfo(
+        return new FunctionInfo(
             $this->getParamTypes($params, $namedParamTypes),
             $this->getReturnType($docComment)
         );

@@ -7,10 +7,10 @@ class Context {
 
     // [ClassName => [ClassName]]
     public $parents = [];
-    // [ClassName => [MethodName => TypeInfo]]
+    // [ClassName => [MethodName => FunctionInfo]]
     public $typeInfo;
 
-    public function getTypeInfoForMethod(string $class, string $method) /* : ?TypeInfo */ {
+    public function getFunctionInfoForMethod(string $class, string $method) /* : ?FunctionInfo */ {
         $lowerMethod = strtolower($method);
         $typeInfo = $this->typeInfo[strtolower($class)][$lowerMethod] ?? null;
         if ($lowerMethod === '__construct') {
@@ -18,29 +18,29 @@ class Context {
             return $typeInfo;
         }
 
-        $inheritedTypeInfo = $this->getInheritedTypeInfo($class, $method);
+        $inheritedFunctionInfo = $this->getInheritedFunctionInfo($class, $method);
         if (null === $typeInfo) {
-            return $inheritedTypeInfo;
+            return $inheritedFunctionInfo;
         }
 
-        if (null === $inheritedTypeInfo) {
+        if (null === $inheritedFunctionInfo) {
             return $typeInfo;
         }
 
-        return $this->mergeTypeInfo($typeInfo, $inheritedTypeInfo);
+        return $this->mergeFunctionInfo($typeInfo, $inheritedFunctionInfo);
     }
 
-    private function getInheritedTypeInfo(string $class, string $method) /* : ?TypeInfo */ {
+    private function getInheritedFunctionInfo(string $class, string $method) /* : ?FunctionInfo */ {
         $parents = $this->parents[strtolower($class)] ?? [];
         foreach ($parents as $parent) {
             if (!$this->isKnownClass($parent)) {
-                $typeInfo = $this->getReflectionTypeInfo($parent, $method);
+                $typeInfo = $this->getReflectionFunctionInfo($parent, $method);
                 if (null !== $typeInfo) {
                     return $typeInfo;
                 }
             }
 
-            $typeInfo = $this->getTypeInfoForMethod($parent, $method);
+            $typeInfo = $this->getFunctionInfoForMethod($parent, $method);
             if (null !== $typeInfo) {
                 return $typeInfo;
             }
@@ -48,7 +48,7 @@ class Context {
         return null;
     }
 
-    private function getReflectionTypeInfo(string $class, string $method) /* : ?TypeInfo */ {
+    private function getReflectionFunctionInfo(string $class, string $method) /* : ?FunctionInfo */ {
         try {
             $r = new \ReflectionMethod($class, $method);
         } catch (\Exception $e) {
@@ -69,14 +69,14 @@ class Context {
             $paramTypes[] = $type;
         }
 
-        return new TypeInfo($paramTypes, null);
+        return new FunctionInfo($paramTypes, null);
     }
 
-    private function mergeTypeInfo(TypeInfo $child, TypeInfo $parent) {
+    private function mergeFunctionInfo(FunctionInfo $child, FunctionInfo $parent) {
         $paramTypes = $parent->paramTypes + $child->paramTypes;
         $returnType = $parent->returnType ?? $child->returnType;
 
-        return new TypeInfo($paramTypes, $returnType);
+        return new FunctionInfo($paramTypes, $returnType);
     }
 
     private function isKnownClass(string $name) {

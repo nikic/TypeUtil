@@ -10,18 +10,6 @@ error_reporting(E_ALL);
 
 require __DIR__ . '/vendor/autoload.php';
 
-class TypeInfo {
-    use NoDynamicProperties;
-
-    public $paramTypes;
-    public $returnType;
-
-    public function __construct(array $paramTypes, $returnType) {
-        $this->paramTypes = $paramTypes;
-        $this->returnType = $returnType;
-    }
-}
-
 // TODO Upstream this
 class NameResolver extends PhpParser\NodeVisitor\NameResolver {
     public function doResolveClassName($name) {
@@ -68,7 +56,7 @@ class TypeAnnotationVisitor extends TypeModificationVisitor {
             return;
         }
 
-        $typeInfo = $this->getTypeInfo($node);
+        $typeInfo = $this->getFunctionInfo($node);
         if (null === $typeInfo) {
             return;
         }
@@ -113,14 +101,14 @@ class TypeAnnotationVisitor extends TypeModificationVisitor {
         $this->code->insert($pos, ' : ' . $this->getTypeString($returnType));
     }
 
-    private function getTypeInfo(Node $node) /* : ?TypeInfo */ {
+    private function getFunctionInfo(Node $node) /* : ?FunctionInfo */ {
         if ($node instanceof Stmt\ClassMethod) {
-            return $this->context->getTypeInfoForMethod($this->className, $node->name);
+            return $this->context->getFunctionInfoForMethod($this->className, $node->name);
         }
 
         $docComment = $node->getDocComment();
         if (null !== $docComment) {
-            return $this->extractor->extractTypeInfo($node->params, $docComment->getText());
+            return $this->extractor->extractFunctionInfo($node->params, $docComment->getText());
         }
 
         return null;
