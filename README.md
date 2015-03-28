@@ -15,4 +15,6 @@ Notes:
  * Not well tested - probably doesn't work in many cases
  * Uses only doc comments, so requires good doc comment coverage
  * Requires PHP 7 to run
+ * The main job of this utility is dealing with the fact that PHP return types are semi-invariant
+   and argument types are fully invariant
 

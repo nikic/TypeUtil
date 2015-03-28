@@ -39,7 +39,7 @@ foreach ($dirs as $dir) {
     }
 }
 $fileProvider = function() use($dirs) : \Traversable {
-    return phpFilesInDirs($dirs);
+    return filesInDirs($dirs, 'php');
 };
 
 $lexer = new PhpParser\Lexer\Emulative([
@@ -59,46 +59,11 @@ if ('add' === $mode) {
         astsForFiles($parser, $fileProvider()));
 
     echo "Adding type annotations...\n";
-    $traverser = new PhpParser\NodeTraverser(false);
-    $traverser->addVisitor($nameResolver);
-
-    $visitor = new TypeAnnotationVisitor($context, $extractor);
-    $traverser->addVisitor($visitor);
-
-    foreach (astsForFiles($parser, $fileProvider()) as $path => list($code, $stmts)) {
-        $mutableCode = new MutableString($code);
-        $visitor->setCode($mutableCode);
-        $traverser->traverse($stmts);
-
-        $newCode = $mutableCode->getModifiedString();
-
-        if ($strictTypes) {
-            $newCode = preg_replace(
-                '/^<\?php(?! declare)/', '<?php declare(strict_types=1);', $newCode
-            );
-        }
-
-        if ($newCode !== $code) {
-            file_put_contents($path, $newCode);
-        }
-    }
+    $asts = astsForFiles($parser, $fileProvider());
+    modifyFiles($asts, getAddModifier($nameResolver, $extractor, $context, $strictTypes));
 } else if ('remove' === $mode) {
-    $traverser = new PhpParser\NodeTraverser(false);
-    $visitor = new TypeRemovalVisitor();
-    $traverser->addVisitor($visitor);
-
-    foreach (astsForFiles($parser, $fileProvider()) as $path => list($code, $stmts)) {
-        $mutableCode = new MutableString($code);
-        $visitor->setCode($mutableCode);
-        $traverser->traverse($stmts);
-
-        $newCode = $mutableCode->getModifiedString();
-        $newCode = preg_replace('/^<\?php declare\(strict_types=1\);/', '<?php', $newCode);
-
-        if ($newCode !== $code) {
-            file_put_contents($path, $newCode);
-        }
-    }
+    $asts = astsForFiles($parser, $fileProvider());
+    modifyFiles($asts, getRemoveModifier());
 }
 
 $endTime = microtime(true);

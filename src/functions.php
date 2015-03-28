@@ -3,12 +3,17 @@
 namespace TypeUtil;
 
 use PhpParser;
+use PhpParser\NodeTraverser;
 
 function strContains(string $haystack, string $needle) : bool {
     return strpos($haystack, $needle) !== false;
 }
 
-function phpFilesInDirs(array $dirs) : \Generator {
+function strEndsWith(string $haystack, string $needle) : bool {
+    return substr($haystack, -strlen($needle)) === $needle;
+}
+
+function filesInDirs(array $dirs, string $extension) : \Generator {
     foreach ($dirs as $dir) {
         $it = new \RecursiveIteratorIterator(
             new \RecursiveDirectoryIterator($dir),
@@ -19,7 +24,7 @@ function phpFilesInDirs(array $dirs) : \Generator {
                 continue;
             }
 
-            if (!preg_match('/\.php$/', $file->getPathName())) {
+            if (!strEndsWith($file->getPathName(), '.' . $extension)) {
                 continue;
             }
 
@@ -47,7 +52,7 @@ function astsForFiles(PhpParser\Parser $parser, \Traversable $files) : \Generato
 function getContext(
     TypeExtractor $extractor, NameResolver $nameResolver, \Traversable $asts
 ) : Context {
-    $traverser = new PhpParser\NodeTraverser(false);
+    $traverser = new NodeTraverser(false);
     $traverser->addVisitor($nameResolver);
 
     $visitor = new ContextCollector($extractor);
@@ -59,3 +64,53 @@ function getContext(
 
     return $visitor->getContext();
 }
+
+function getAddModifier(
+    NameResolver $nameResolver, TypeExtractor $extractor, Context $context, bool $strictTypes
+) : callable {
+    $traverser = new NodeTraverser(false);
+    $traverser->addVisitor($nameResolver);
+
+    $visitor = new TypeAnnotationVisitor($context, $extractor);
+    $traverser->addVisitor($visitor);
+
+    return function(string $code, array $stmts) use($visitor, $traverser, $strictTypes) {
+        $mutableCode = new MutableString($code);
+        $visitor->setCode($mutableCode);
+        $traverser->traverse($stmts);
+
+        $newCode = $mutableCode->getModifiedString();
+        if (!$strictTypes) {
+            return $newCode;
+        }
+
+        return preg_replace(
+            '/^<\?php(?! declare)/', '<?php declare(strict_types=1);', $newCode
+        );
+    };
+}
+
+function getRemoveModifier() : callable {
+    $traverser = new PhpParser\NodeTraverser(false);
+    $visitor = new TypeRemovalVisitor();
+    $traverser->addVisitor($visitor);
+
+    return function(string $code, array $stmts) use($visitor, $traverser) {
+        $mutableCode = new MutableString($code);
+        $visitor->setCode($mutableCode);
+        $traverser->traverse($stmts);
+
+        $newCode = $mutableCode->getModifiedString();
+        return preg_replace('/^<\?php declare\(strict_types=1\);/', '<?php', $newCode);
+    };
+}
+
+function modifyFiles(\Traversable $asts, callable $modifier) {
+    foreach ($asts as $path => list($code, $stmts)) {
+        $newCode = $modifier($code, $stmts);
+        if ($code !== $newCode) {
+            file_put_contents($path, $newCode);
+        }
+    }
+}
+
