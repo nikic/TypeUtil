@@ -86,12 +86,17 @@ class TypeExtractor {
             }
             $resultType = $this->getCanonicalTypeName($type);
         }
+
+        if (null === $resultType) {
+            // Happens if type string is "null"
+            return null;
+        }
         return new Type($resultType, $isNullable);
     }
 
     private function isSupportedTypeName(string $name) : bool {
         return preg_match('/^[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*$/', $name) === 1
-            && $name !== 'mixed' && $name !== 'void';
+            && $name !== 'mixed' && $name !== 'void' && $name !== 'static';
     }
 
     private function getCanonicalTypeName(string $name) : string {

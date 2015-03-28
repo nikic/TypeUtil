@@ -70,7 +70,7 @@ class TypeAnnotationVisitor extends MutatingVisitor {
             return;
         }
 
-        $pos = $this->getReturnTypeHintPos($node->getAttribute('startFilePos'));
+        $pos = $this->getReturnTypeHintPos($node);
         $this->code->insert($pos, ' : ' . $this->extractor->getTypeDisplayName($returnType));
     }
 

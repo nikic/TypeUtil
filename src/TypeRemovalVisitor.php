@@ -16,7 +16,7 @@ class TypeRemovalVisitor extends MutatingVisitor {
         }
 
         if (null !== $node->returnType) {
-            $startPos = $this->getReturnTypeHintPos($node->getAttribute('startFilePos'));
+            $startPos = $this->getReturnTypeHintPos($node);
             $this->code->remove($startPos, $this->getTypeHintLength($startPos));
         }
 

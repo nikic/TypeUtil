@@ -10,7 +10,7 @@ class IntegrationTest extends \PHPUnit_Framework_TestCase {
     public function testMutation(string $name, string $type, string $code, string $expected) {
         $lexer = new Lexer\Emulative([
             'usedAttributes' => [
-                'comments', 'startLine', 'startFilePos',
+                'comments', 'startLine', 'startFilePos', 'endFilePos',
             ]
         ]);
         $parser = new Parser($lexer);

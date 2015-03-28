@@ -2,6 +2,7 @@
 
 namespace TypeUtil;
 
+use PhpParser\Node;
 use PhpParser\NodeVisitorAbstract;
 
 class MutatingVisitor extends NodeVisitorAbstract {
@@ -14,8 +15,15 @@ class MutatingVisitor extends NodeVisitorAbstract {
     }
 
     // TODO: Move this somewhere more appropriate
-    protected function getReturnTypeHintPos(int $funcStartPos) : int {
-        $pos = $this->code->indexOf(')', $funcStartPos);
+    protected function getReturnTypeHintPos(Node $funcNode) : int {
+        // Start looking at maximum known position in function signature
+        $maxPos = $funcNode->getAttribute('startFilePos');
+        foreach ($funcNode->params as $param) {
+            $maxPos = $param->getAttribute('endFilePos') + 1;
+        }
+
+        // And find the closing parentheses of the signature
+        $pos = $this->code->indexOf(')', $maxPos);
         assert(false !== $pos);
         return $pos + 1;
     }

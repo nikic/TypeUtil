@@ -45,7 +45,7 @@ $fileProvider = function() use($dirs) : \Traversable {
 
 $lexer = new PhpParser\Lexer\Emulative([
     'usedAttributes' => [
-        'comments', 'startLine', 'startFilePos',
+        'comments', 'startLine', 'startFilePos', 'endFilePos',
     ]
 ]);
 $parser = new PhpParser\Parser($lexer);
