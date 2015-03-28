@@ -9,6 +9,10 @@ function strContains(string $haystack, string $needle) : bool {
     return strpos($haystack, $needle) !== false;
 }
 
+function strStartsWith(string $haystack, string $needle) : bool {
+    return strpos($haystack, $needle) === 0;
+}
+
 function strEndsWith(string $haystack, string $needle) : bool {
     return substr($haystack, -strlen($needle)) === $needle;
 }

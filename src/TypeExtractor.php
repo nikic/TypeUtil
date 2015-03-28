@@ -21,6 +21,14 @@ class TypeExtractor {
         );
     }
 
+    public function getTypeDisplayName(Type $type) : string {
+        if (!$type->isClassHint()) {
+            return $type->name;
+        }
+
+        return $this->nameResolver->getShortestName($type->name);
+    }
+
     private function getParamTypes(array $params, array $namedParamTypes) : array {
         $paramTypes = [];
         foreach ($params as $param) {

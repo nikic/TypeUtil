@@ -57,7 +57,7 @@ class TypeAnnotationVisitor extends MutatingVisitor {
             }
 
             $startPos = $param->getAttribute('startFilePos');
-            $this->code->insert($startPos, $this->getTypeString($type) . ' ');
+            $this->code->insert($startPos, $this->extractor->getTypeDisplayName($type) . ' ');
         }
 
         $returnType = $typeInfo->returnType;
@@ -71,7 +71,7 @@ class TypeAnnotationVisitor extends MutatingVisitor {
         }
 
         $pos = $this->getReturnTypeHintPos($node->getAttribute('startFilePos'));
-        $this->code->insert($pos, ' : ' . $this->getTypeString($returnType));
+        $this->code->insert($pos, ' : ' . $this->extractor->getTypeDisplayName($returnType));
     }
 
     private function getFunctionInfo(Node $node) /* : ?FunctionInfo */ {
@@ -90,15 +90,6 @@ class TypeAnnotationVisitor extends MutatingVisitor {
     private function isNullConstant(Node\Expr $node) : bool {
         return $node instanceof Node\Expr\ConstFetch
             && strtolower($node->name->toString()) === 'null';
-    }
-
-    private function getTypeString(Type $type) : string {
-        if (!$type->isClassHint()) {
-            return $type->name;
-        }
-
-        // TODO
-        return '\\' . $type->name;
     }
 }
 

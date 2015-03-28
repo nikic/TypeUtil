@@ -6,8 +6,19 @@
  * @param int $b
  * @return int
  */
-function test($a, $b) {
+function add($a, $b) {
     return $a + $b;
+}
+
+class Number {
+    /**
+     * @param int $a
+     * @param int $b
+     * @return int
+     */
+    public function add($a, $b) {
+        return $a + $b;
+    }
 }
 
 ?>
@@ -19,8 +30,19 @@ function test($a, $b) {
  * @param int $b
  * @return int
  */
-function test(int $a, int $b) : int {
+function add(int $a, int $b) : int {
     return $a + $b;
+}
+
+class Number {
+    /**
+     * @param int $a
+     * @param int $b
+     * @return int
+     */
+    public function add(int $a, int $b) : int {
+        return $a + $b;
+    }
 }
 
 ?>
