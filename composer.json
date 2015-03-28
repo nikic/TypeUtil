@@ -1,0 +1,6 @@
+{
+    "require": {
+		"php": ">=7.0"
+        "nikic/php-parser": "^1.2.1"
+    }
+}
