@@ -1,6 +1,6 @@
 ## Utility for adding return types and scalar types
 
-> **WARNING**: Utility directly modifies files under the assumption that you're using git.
+> **WARNING**: Utility directly modifies files under the assumption that you're using version control.
 
 To add return types and scalar types based on doc comments, run:
 
