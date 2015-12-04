@@ -4,6 +4,7 @@
 namespace TypeUtil;
 
 use PhpParser;
+use PhpParser\ParserFactory;
 
 error_reporting(E_ALL);
 
@@ -48,7 +49,7 @@ $lexer = new PhpParser\Lexer\Emulative([
         'comments', 'startLine', 'startFilePos', 'endFilePos',
     ]
 ]);
-$parser = new PhpParser\Parser($lexer);
+$parser = (new ParserFactory)->create(ParserFactory::PREFER_PHP7, $lexer);
 
 $startTime = microtime(true);
 if ('add' === $mode) {

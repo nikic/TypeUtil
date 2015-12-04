@@ -4,6 +4,7 @@ namespace TypeUtil;
 
 use PhpParser\Lexer;
 use PhpParser\Parser;
+use PhpParser\ParserFactory;
 
 class IntegrationTest extends \PHPUnit_Framework_TestCase {
     /** @dataProvider provideTests */
@@ -13,7 +14,7 @@ class IntegrationTest extends \PHPUnit_Framework_TestCase {
                 'comments', 'startLine', 'startFilePos', 'endFilePos',
             ]
         ]);
-        $parser = new Parser($lexer);
+        $parser = (new ParserFactory)->create(ParserFactory::PREFER_PHP7, $lexer);
         $strictTypes = false;
 
         switch ($type) {
