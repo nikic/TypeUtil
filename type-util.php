@@ -14,7 +14,7 @@ function error(string $msg) {
     echo <<<HELP
 $msg
 
-Usage: php ./type-util.php add|remove dir1 dir2 ...
+Usage: php ./type-util.php add|remove [--no-strict-types] dir1 dir2 ...
 
 NOTE: Will directly modify files, assumes that you're using VCS.
 
@@ -34,12 +34,19 @@ if ($mode !== 'add' && $mode !== 'remove') {
     error('Mode must be one of "add" or "remove".');
 }
 
-$dirs = array_slice($argv, 2);
-foreach ($dirs as $dir) {
-    if (!is_dir($dir)) {
-        error("$dir is not a directory.");
+$dirs = [];
+foreach (array_slice($argv, 2) as $arg) {
+    if ($arg === '--no-strict-types') {
+        $strictTypes = false;
+        continue;
     }
+
+    if (!is_dir($arg)) {
+        error("$arg is not a directory.");
+    }
+    $dirs[] = $arg;
 }
+
 $fileProvider = function() use($dirs) : \Traversable {
     return filesInDirs($dirs, 'php');
 };
