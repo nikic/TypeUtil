@@ -8,6 +8,7 @@ use PhpParser\NodeVisitorAbstract;
 class MutatingVisitor extends NodeVisitorAbstract {
     use NoDynamicProperties;
 
+    /** @var MutableString */
     protected $code;
 
     public function setCode(MutableString $code) {

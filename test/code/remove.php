@@ -2,10 +2,15 @@
 <?php
 
 function test(
-    int $a,
-    array $b
+    int  $a,
+    array $b,
+    ?Foo$c,
+    ? Bar $d = null,
+    ?int $e = null
 ) : bool {
 }
+
+function test2() : void {}
 
 ?>
 -----
@@ -13,8 +18,13 @@ function test(
 
 function test(
     $a,
-    array $b
+    array $b,
+    $c,
+    Bar $d = null,
+    $e = null
 ) {
 }
+
+function test2() {}
 
 ?>
