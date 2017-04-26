@@ -14,7 +14,7 @@ function error(string $msg) {
     echo <<<HELP
 $msg
 
-Usage: php ./type-util.php add|remove [--no-strict-types] dir1 dir2 ...
+Usage: php ./type-util.php add|remove [--no-strict-types --php71] dir1 dir2 ...
 
 NOTE: Will directly modify files, assumes that you're using VCS.
 
@@ -24,6 +24,7 @@ HELP;
 
 // Config
 $strictTypes = true;
+$php71 = false;
 
 if ($argc <= 2) {
     error('At least two arguments are required.');
@@ -38,6 +39,11 @@ $dirs = [];
 foreach (array_slice($argv, 2) as $arg) {
     if ($arg === '--no-strict-types') {
         $strictTypes = false;
+        continue;
+    }
+
+    if ($arg === '--php71') {
+        $php71 = true;
         continue;
     }
 
@@ -69,7 +75,7 @@ if ('add' === $mode) {
 
     echo "Adding type annotations...\n";
     $asts = astsForFiles($parser, $fileProvider());
-    modifyFiles($asts, getAddModifier($nameResolver, $extractor, $context, $strictTypes));
+    modifyFiles($asts, getAddModifier($nameResolver, $extractor, $context, $strictTypes, $php71));
 } else if ('remove' === $mode) {
     $asts = astsForFiles($parser, $fileProvider());
     modifyFiles($asts, getRemoveModifier());

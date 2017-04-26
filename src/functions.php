@@ -70,12 +70,12 @@ function getContext(
 }
 
 function getAddModifier(
-    NameResolver $nameResolver, TypeExtractor $extractor, Context $context, bool $strictTypes
+    NameResolver $nameResolver, TypeExtractor $extractor, Context $context, bool $strictTypes, bool $php71
 ) : callable {
     $traverser = new NodeTraverser(false);
     $traverser->addVisitor($nameResolver);
 
-    $visitor = new TypeAnnotationVisitor($context, $extractor);
+    $visitor = new TypeAnnotationVisitor($context, $extractor, $php71);
     $traverser->addVisitor($visitor);
 
     return function(string $code, array $stmts) use($visitor, $traverser, $strictTypes) {

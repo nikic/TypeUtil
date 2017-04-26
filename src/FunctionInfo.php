@@ -5,7 +5,9 @@ namespace TypeUtil;
 class FunctionInfo {
     use NoDynamicProperties;
 
+    /** @var Type[] */
     public $paramTypes;
+    /** @var Type|null */
     public $returnType;
 
     public function __construct(array $paramTypes, $returnType) {

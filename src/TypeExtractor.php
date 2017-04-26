@@ -22,6 +22,11 @@ class TypeExtractor {
     }
 
     public function getTypeDisplayName(Type $type) : string {
+        $prefix = $type->isNullable ? '?' : '';
+        return $prefix . $this->getBaseTypeDisplayName($type);
+    }
+
+    private function getBaseTypeDisplayName(Type $type) : string {
         if (!$type->isClassHint()) {
             return $type->name;
         }

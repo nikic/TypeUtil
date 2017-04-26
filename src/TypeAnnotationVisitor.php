@@ -10,10 +10,12 @@ class TypeAnnotationVisitor extends MutatingVisitor {
     private $context;
     private $extractor;
     private $className;
+    private $php71;
 
-    public function __construct(Context $context, TypeExtractor $extractor) {
+    public function __construct(Context $context, TypeExtractor $extractor, bool $php71) {
         $this->context = $context;
         $this->extractor = $extractor;
+        $this->php71 = $php71;
     }
 
     public function enterNode(Node $node) {
@@ -49,9 +51,12 @@ class TypeAnnotationVisitor extends MutatingVisitor {
 
             if ($type->isNullable) {
                 $default = $param->default;
-                if ($default === null || !$this->isNullConstant($default)) {
-                    // Type is nullable, but no null default is specified.
-                    // Leave it alone to avoid accidentially making something optional.
+                if ($default !== null && $this->isNullConstant($default)) {
+                    // Type is nullable and has null default. We can add the type
+                    // as a non-nullable type in this case, which is compatible with PHP 7.0
+                    $type = $type->asNotNullable();
+                } else if (!$this->php71) {
+                    // No support for proper nullable types in PHP 7.0
                     continue;
                 }
             }
@@ -65,8 +70,8 @@ class TypeAnnotationVisitor extends MutatingVisitor {
             return;
         }
 
-        if ($returnType->isNullable) {
-            // No nullable return types yet
+        if ($returnType->isNullable && !$this->php71) {
+            // No nullable return types in PHP 7.0
             return;
         }
 

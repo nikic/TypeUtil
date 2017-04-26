@@ -25,4 +25,8 @@ class Type {
                 return true;
         }
     }
+
+    public function asNotNullable() : self {
+        return new self($this->name, false);
+    }
 }

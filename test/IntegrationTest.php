@@ -19,6 +19,7 @@ class IntegrationTest extends \PHPUnit_Framework_TestCase {
         switch ($type) {
         case 'add':
         case 'add-strict':
+        case 'add-php71':
             $nameResolver = new NameResolver();
             $extractor = new TypeExtractor($nameResolver);
 
@@ -26,7 +27,8 @@ class IntegrationTest extends \PHPUnit_Framework_TestCase {
                 $this->codeToAstStream($parser, $code));
 
             $strictTypes = $type === 'add-strict';
-            $modifier = getAddModifier($nameResolver, $extractor, $context, $strictTypes);
+            $php71 = $type === 'add-php71';
+            $modifier = getAddModifier($nameResolver, $extractor, $context, $strictTypes, $php71);
             $result = $modifier($code, $parser->parse($code));
             break;
         case 'remove':
@@ -45,7 +47,7 @@ class IntegrationTest extends \PHPUnit_Framework_TestCase {
             $code = file_get_contents($name);
             list($orig, $expected) = explode('-----', $code);
 
-            $ret = preg_match('/^#!([a-z-]+)\R/', $code, $matches);
+            $ret = preg_match('/^#!([a-z0-9-]+)\R/', $code, $matches);
             assert($ret === 1);
 
             $type = $matches[1];
