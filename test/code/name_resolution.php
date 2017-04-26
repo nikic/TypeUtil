@@ -4,6 +4,7 @@
 namespace Foo;
 
 use ABC\Baz;
+use ABC\{XYZ};
 
 /** @return \Bar */
 function test1() {}
@@ -20,6 +21,9 @@ function test4() {}
 /** @return Baz\Foo */
 function test5() {}
 
+/** @return XYZ */
+function test6() {}
+
 ?>
 -----
 <?php
@@ -27,6 +31,7 @@ function test5() {}
 namespace Foo;
 
 use ABC\Baz;
+use ABC\{XYZ};
 
 /** @return \Bar */
 function test1() : \Bar {}
@@ -38,9 +43,12 @@ function test2() : Bar {}
 function test3() : Bar\Baz {}
 
 /** @return Baz */
-function test4() : \ABC\Baz {}
+function test4() : Baz {}
 
 /** @return Baz\Foo */
-function test5() : \ABC\Baz\Foo {}
+function test5() : Baz\Foo {}
+
+/** @return XYZ */
+function test6() : XYZ {}
 
 ?>
