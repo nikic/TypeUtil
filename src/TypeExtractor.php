@@ -95,7 +95,7 @@ class TypeExtractor {
     }
 
     private function isSupportedTypeName(string $name) : bool {
-        return preg_match('/^[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*$/', $name) === 1
+        return preg_match('/^[a-zA-Z_\x7f-\xff\\\\][a-zA-Z0-9_\x7f-\xff\\\\]*$/', $name) === 1
             && $name !== 'mixed' && $name !== 'void' && $name !== 'static';
     }
 
