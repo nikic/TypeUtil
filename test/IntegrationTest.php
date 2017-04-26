@@ -15,16 +15,17 @@ class IntegrationTest extends \PHPUnit_Framework_TestCase {
             ]
         ]);
         $parser = (new ParserFactory)->create(ParserFactory::PREFER_PHP7, $lexer);
-        $strictTypes = false;
 
         switch ($type) {
         case 'add':
+        case 'add-strict':
             $nameResolver = new NameResolver();
             $extractor = new TypeExtractor($nameResolver);
 
             $context = getContext($extractor, $nameResolver,
                 $this->codeToAstStream($parser, $code));
 
+            $strictTypes = $type === 'add-strict';
             $modifier = getAddModifier($nameResolver, $extractor, $context, $strictTypes);
             $result = $modifier($code, $parser->parse($code));
             break;
@@ -44,7 +45,7 @@ class IntegrationTest extends \PHPUnit_Framework_TestCase {
             $code = file_get_contents($name);
             list($orig, $expected) = explode('-----', $code);
 
-            $ret = preg_match('/^#!(add|remove)\R/', $code, $matches);
+            $ret = preg_match('/^#!([a-z-]+)\R/', $code, $matches);
             assert($ret === 1);
 
             $type = $matches[1];

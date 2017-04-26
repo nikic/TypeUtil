@@ -89,7 +89,7 @@ function getAddModifier(
         }
 
         return preg_replace(
-            '/^<\?php(?! declare)/', '<?php declare(strict_types=1);', $newCode
+            '/^<\?php(?!\s+declare)/', '<?php declare(strict_types=1);', $newCode
         );
     };
 }
