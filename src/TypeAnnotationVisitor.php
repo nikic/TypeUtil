@@ -24,10 +24,7 @@ class TypeAnnotationVisitor extends MutatingVisitor {
             return;
         }
 
-        if (!$node instanceof Stmt\Function_
-            && !$node instanceof Stmt\ClassMethod
-            && !$node instanceof Expr\Closure
-        ) {
+        if (!$node instanceof Node\FunctionLike) {
             return;
         }
 
@@ -37,7 +34,7 @@ class TypeAnnotationVisitor extends MutatingVisitor {
         }
 
         $paramTypes = $typeInfo->paramTypes;
-        foreach ($node->params as $i => $param) {
+        foreach ($node->getParams() as $i => $param) {
             if ($param->type !== null) {
                 // Already has a typehint, leave it alone
                 continue;
@@ -66,7 +63,7 @@ class TypeAnnotationVisitor extends MutatingVisitor {
         }
 
         $returnType = $typeInfo->returnType;
-        if (null === $returnType || null !== $node->returnType) {
+        if (null === $returnType || null !== $node->getReturnType()) {
             return;
         }
 
@@ -79,14 +76,14 @@ class TypeAnnotationVisitor extends MutatingVisitor {
         $this->code->insert($pos, ' : ' . $this->extractor->getTypeDisplayName($returnType));
     }
 
-    private function getFunctionInfo(Node $node) /* : ?FunctionInfo */ {
+    private function getFunctionInfo(Node\FunctionLike $node) /* : ?FunctionInfo */ {
         if ($node instanceof Stmt\ClassMethod) {
             return $this->context->getFunctionInfoForMethod($this->className, (string) $node->name);
         }
 
         $docComment = $node->getDocComment();
         if (null !== $docComment) {
-            return $this->extractor->extractFunctionInfo($node->params, $docComment->getText());
+            return $this->extractor->extractFunctionInfo($node->getParams(), $docComment->getText());
         }
 
         return null;

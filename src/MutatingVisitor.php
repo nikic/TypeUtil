@@ -16,10 +16,10 @@ class MutatingVisitor extends NodeVisitorAbstract {
     }
 
     // TODO: Move this somewhere more appropriate
-    protected function getReturnTypeHintPos(Node $funcNode) : int {
+    protected function getReturnTypeHintPos(Node\FunctionLike $funcNode) : int {
         // Start looking at maximum known position in function signature
         $maxPos = $funcNode->getAttribute('startFilePos');
-        foreach ($funcNode->params as $param) {
+        foreach ($funcNode->getParams() as $param) {
             $maxPos = $param->getAttribute('endFilePos') + 1;
         }
 
