@@ -51,7 +51,7 @@ class ContextCollector extends NodeVisitorAbstract {
             return;
         }
 
-        $this->context->typeInfo[$this->getLowerClassName()][strtolower($node->name)]
+        $this->context->typeInfo[$this->getLowerClassName()][strtolower((string) $node->name)]
             = $this->extractor->extractFunctionInfo($node->params, $docComment->getText());
     }
 

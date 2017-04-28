@@ -46,7 +46,8 @@ class TypeRemovalVisitor extends MutatingVisitor {
     }
 
     private function isScalarType($type) {
-        return is_string($type) && in_array($type, ['bool', 'int', 'float', 'string']);
+        return $type instanceof Node\Identifier
+            && in_array((string) $type, ['bool', 'int', 'float', 'string']);
     }
 
     private function getTypeHintLength(int $startPos, bool $withTrailingWhitespace) {
