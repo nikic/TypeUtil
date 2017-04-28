@@ -66,7 +66,7 @@ $parser = (new ParserFactory)->create(ParserFactory::PREFER_PHP7, $lexer);
 
 $startTime = microtime(true);
 if ('add' === $mode) {
-    $nameResolver = new NameResolver();
+    $nameResolver = new PhpParser\NodeVisitor\NameResolver();
     $extractor = new TypeExtractor($nameResolver);
 
     echo "Collecting context...\n";

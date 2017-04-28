@@ -1,7 +1,7 @@
 {
     "require": {
 		"php": ">=7.0-dev",
-        "nikic/php-parser": "^3.0"
+        "nikic/php-parser": "dev-master"
     },
 	"autoload": {
 		"psr-4": {

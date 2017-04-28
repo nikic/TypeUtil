@@ -3,6 +3,9 @@
 namespace TypeUtil;
 
 use PhpParser\Node\Name;
+use PhpParser\Node\Param;
+use PhpParser\Node\Stmt\Use_;
+use PhpParser\NodeVisitor\NameResolver;
 
 class TypeExtractor {
     use NoDynamicProperties;
@@ -31,13 +34,20 @@ class TypeExtractor {
             return $type->name;
         }
 
-        return $this->nameResolver->getShortestName($type->name);
+        $nameContext = $this->nameResolver->getNameContext();
+        $fqName = new Name\FullyQualified($type->name);
+        return $nameContext->getShortName($fqName, Use_::TYPE_NORMAL)->toCodeString();
     }
 
+    /**
+     * @param Param[] $params
+     * @param Type[] $namedParamTypes
+     * @return Type[]
+     */
     private function getParamTypes(array $params, array $namedParamTypes) : array {
         $paramTypes = [];
         foreach ($params as $param) {
-            $paramTypes[] = $namedParamTypes[$param->name] ?? null;
+            $paramTypes[] = $namedParamTypes[$param->var->name] ?? null;
         }
         return $paramTypes;
     }
@@ -124,8 +134,9 @@ class TypeExtractor {
                     return substr($name, 1);
                 }
 
+                $nameContext = $this->nameResolver->getNameContext();
                 $name = new Name($name);
-                return $this->nameResolver->doResolveClassName($name)->toString();
+                return $nameContext->getResolvedClassName($name)->toString();
         }
     }
 }

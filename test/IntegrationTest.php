@@ -3,6 +3,7 @@
 namespace TypeUtil;
 
 use PhpParser\Lexer;
+use PhpParser\NodeVisitor\NameResolver;
 use PhpParser\Parser;
 use PhpParser\ParserFactory;
 

@@ -54,7 +54,7 @@ function astsForFiles(PhpParser\Parser $parser, \Traversable $files) : \Generato
 }
 
 function getContext(
-    TypeExtractor $extractor, NameResolver $nameResolver, \Traversable $asts
+    TypeExtractor $extractor, PhpParser\NodeVisitor\NameResolver $nameResolver, \Traversable $asts
 ) : Context {
     $traverser = new NodeTraverser(false);
     $traverser->addVisitor($nameResolver);
@@ -70,7 +70,8 @@ function getContext(
 }
 
 function getAddModifier(
-    NameResolver $nameResolver, TypeExtractor $extractor, Context $context, bool $strictTypes, bool $php71
+    PhpParser\NodeVisitor\NameResolver $nameResolver, TypeExtractor $extractor, Context $context,
+    bool $strictTypes, bool $php71
 ) : callable {
     $traverser = new NodeTraverser(false);
     $traverser->addVisitor($nameResolver);
