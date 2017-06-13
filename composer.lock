@@ -12,12 +12,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/nikic/PHP-Parser.git",
-                "reference": "e5fbdd6bda64a78b3330497e4379b26cbbf45da5"
+                "reference": "19dde1363e8bd83e98bc2320ecc42b61e379255d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nikic/PHP-Parser/zipball/e5fbdd6bda64a78b3330497e4379b26cbbf45da5",
-                "reference": "e5fbdd6bda64a78b3330497e4379b26cbbf45da5",
+                "url": "https://api.github.com/repos/nikic/PHP-Parser/zipball/19dde1363e8bd83e98bc2320ecc42b61e379255d",
+                "reference": "19dde1363e8bd83e98bc2320ecc42b61e379255d",
                 "shasum": ""
             },
             "require": {
@@ -55,7 +55,7 @@
                 "parser",
                 "php"
             ],
-            "time": "2017-04-28 19:23:55"
+            "time": "2017-06-13 17:51:22"
         }
     ],
     "packages-dev": [],

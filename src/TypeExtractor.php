@@ -35,8 +35,7 @@ class TypeExtractor {
         }
 
         $nameContext = $this->nameResolver->getNameContext();
-        $fqName = new Name\FullyQualified($type->name);
-        return $nameContext->getShortName($fqName, Use_::TYPE_NORMAL)->toCodeString();
+        return $nameContext->getShortName($type->name, Use_::TYPE_NORMAL)->toCodeString();
     }
 
     /**
