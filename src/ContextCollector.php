@@ -13,6 +13,8 @@ class ContextCollector extends NodeVisitorAbstract {
     private $extractor;
     private $context;
     private $classNode;
+    /** @var ClassInfo */
+    private $classInfo;
 
     public function __construct(TypeExtractor $extractor) {
         $this->extractor = $extractor;
@@ -37,8 +39,10 @@ class ContextCollector extends NodeVisitorAbstract {
 
     private function handleClassLike(ClassLike $node) {
         $this->classNode = $node;
+        $this->classInfo = new ClassInfo($node->namespacedName->toString());
+        $this->context->addClassInfo($this->classInfo);
 
-        $this->context->parents[$this->getLowerClassName()]
+        $this->context->parents[$node->namespacedName->toLowerString()]
             = $this->getParentsOf($node);
     }
 
@@ -51,12 +55,12 @@ class ContextCollector extends NodeVisitorAbstract {
             return;
         }
 
-        $this->context->typeInfo[$this->getLowerClassName()][strtolower((string) $node->name)]
+        $this->classInfo->funcInfos[$node->name->toLowerString()]
             = $this->extractor->extractFunctionInfo($node->params, $docComment->getText());
     }
 
     private function handleTraitUse(Name $name) {
-        $lowerName = strtolower($name->toString());
+        $lowerName = $name->toLowerString();
 
         // Treat parents of the using class as parents of the trait, because it
         // will have to satisfy signatures of those parent methods
@@ -81,10 +85,5 @@ class ContextCollector extends NodeVisitorAbstract {
             }
         }
         return $parents;
-    }
-
-    private function getLowerClassName() : string {
-        assert($this->classNode !== null);
-        return strtolower($this->classNode->namespacedName->toString());
     }
 }

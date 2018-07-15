@@ -5,14 +5,27 @@ namespace TypeUtil;
 class Context {
     use NoDynamicProperties;
 
+    /** @var ClassInfo[] */
+    private $classInfos = [];
+
     // [ClassName => [ClassName]]
+    // The reason why this is separate from ClassInfo is that we need to record trait
+    // pseudo-parents possibly prior to seeing the trait.
     public $parents = [];
-    // [ClassName => [MethodName => FunctionInfo]]
-    public $typeInfo;
+
+    public function addClassInfo(ClassInfo $info) {
+        $this->classInfos[strtolower($info->name)] = $info;
+    }
 
     public function getFunctionInfoForMethod(string $class, string $method) : ?FunctionInfo {
+        $lowerClass = strtolower($class);
         $lowerMethod = strtolower($method);
-        $typeInfo = $this->typeInfo[strtolower($class)][$lowerMethod] ?? null;
+        if (!isset($this->classInfos[$lowerClass])) {
+            return null;
+        }
+
+        $classInfo = $this->classInfos[$lowerClass];
+        $typeInfo = $classInfo->funcInfos[$lowerMethod] ?? null;
         if ($lowerMethod === '__construct') {
             // __construct is excluded from LSP
             return $typeInfo;
