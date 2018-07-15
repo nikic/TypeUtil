@@ -85,20 +85,30 @@ class TypeExtractor {
                 $isNullable = true;
                 continue;
             }
+
+            if (substr($type, -2) === '[]') {
+                $type = 'array';
+            }
+
+            if (!$this->isSupportedTypeName($type)) {
+                return null;
+            }
+
+            $type = $this->getCanonicalTypeName($type);
+
             if ($resultType !== null) {
+                // Promote array|Traversable to iterable
+                if (($resultType === 'array' && $type === 'Traversable') ||
+                    ($type === 'array' && $resultType === 'Traversable')) {
+                    $resultType = 'iterable';
+                    continue;
+                }
+
                 // Don't support union types
                 return null;
             }
 
-            if (substr($type, -2) === '[]') {
-                $resultType = 'array';
-                continue;
-            }
-            if (!$this->isSupportedTypeName($type)) {
-                // Generic types are not supported
-                return null;
-            }
-            $resultType = $this->getCanonicalTypeName($type);
+            $resultType = $type;
         }
 
         if (null === $resultType) {
