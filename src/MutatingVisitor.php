@@ -18,9 +18,9 @@ class MutatingVisitor extends NodeVisitorAbstract {
     // TODO: Move this somewhere more appropriate
     protected function getReturnTypeHintPos(Node\FunctionLike $funcNode) : int {
         // Start looking at maximum known position in function signature
-        $maxPos = $funcNode->getAttribute('startFilePos');
+        $maxPos = $funcNode->getStartFilePos();
         foreach ($funcNode->getParams() as $param) {
-            $maxPos = $param->getAttribute('endFilePos') + 1;
+            $maxPos = $param->getEndFilePos() + 1;
         }
 
         // And find the closing parentheses of the signature

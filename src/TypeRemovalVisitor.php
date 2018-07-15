@@ -31,7 +31,7 @@ class TypeRemovalVisitor extends MutatingVisitor {
                 && $param->default && $this->isNullConstant($param->default)
                 && !$this->isScalarType($param->type->type)
             ) {
-                $startPos = $param->getAttribute('startFilePos');
+                $startPos = $param->getStartFilePos();
                 $result = preg_match('/\?\s*/', $this->code->getOrigString(), $matches, 0, $startPos);
                 assert($result === 1);
                 $this->code->remove($startPos, strlen($matches[0]));
@@ -39,7 +39,7 @@ class TypeRemovalVisitor extends MutatingVisitor {
             }
 
             if ($param->type instanceof Node\NullableType || $this->isScalarType($param->type)) {
-                $startPos = $param->getAttribute('startFilePos');
+                $startPos = $param->getStartFilePos();
                 $this->code->remove($startPos, $this->getTypeHintLength($startPos, true));
             }
         }

@@ -58,7 +58,7 @@ class TypeAnnotationVisitor extends MutatingVisitor {
                 }
             }
 
-            $startPos = $param->getAttribute('startFilePos');
+            $startPos = $param->getStartFilePos();
             $this->code->insert($startPos, $this->extractor->getTypeDisplayName($type) . ' ');
         }
 
