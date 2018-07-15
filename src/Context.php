@@ -123,8 +123,16 @@ class Context {
         $a = $a->asNotNullable();
         $b = $b->asNotNullable();
 
-        // As PHP doesn't support variance properly, only allow if it's exactly the same
-        return $a->name === $b->name;
+        if ($a->name === $b->name) {
+            return true;
+        }
+
+        if ($b->name === 'iterable') {
+            return $a->name === 'array';
+        }
+
+        // We don't check for class subtypes, as PHP does not support this in LSP checks
+        return false;
     }
 
     private function isKnownClass(string $name) : bool {

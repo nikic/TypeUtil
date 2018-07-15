@@ -20,6 +20,7 @@ class Type {
             case 'float':
             case 'string':
             case 'array':
+            case 'iterable':
                 return false;
             default:
                 return true;
