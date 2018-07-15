@@ -115,9 +115,14 @@ class TypeExtractor {
             // Happens if type string is "null"
             return null;
         }
+
         $resolvedType = $resultType;
-        if ($resultType === 'self' && $classInfo !== null) {
-            $resolvedType = $classInfo->name;
+        if ($classInfo !== null) {
+            if ($resultType === 'self') {
+                $resolvedType = $classInfo->name;
+            } else if ($resultType === 'parent' && $classInfo->parent !== null) {
+                $resolvedType = $classInfo->parent;
+            }
         }
         return new Type($resultType, $resolvedType, $isNullable);
     }

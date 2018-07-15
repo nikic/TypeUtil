@@ -38,8 +38,16 @@ class ContextCollector extends NodeVisitorAbstract {
     }
 
     private function handleClassLike(ClassLike $node) {
+        $parent = null;
+        if ($node instanceof Class_) {
+            $parent = $node->extends ? $node->extends->toString() : null;
+        }
+
         $this->classNode = $node;
-        $this->classInfo = new ClassInfo($node->namespacedName->toString());
+        $this->classInfo = new ClassInfo(
+            $node->namespacedName->toString(),
+            $parent
+        );
         $this->context->addClassInfo($this->classInfo);
 
         $this->context->parents[$node->namespacedName->toLowerString()]
