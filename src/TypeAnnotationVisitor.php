@@ -58,6 +58,11 @@ class TypeAnnotationVisitor extends MutatingVisitor {
                 }
             }
 
+            if ($type->name === 'iterable' && !$this->php71) {
+                // Iterable supported since PHP 7.1 only
+                continue;
+            }
+
             $startPos = $param->getStartFilePos();
             $this->code->insert($startPos, $this->extractor->getTypeDisplayName($type) . ' ');
         }
