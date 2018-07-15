@@ -16,11 +16,11 @@ class TypeExtractor {
         $this->nameResolver = $nameResolver;
     }
 
-    public function extractFunctionInfo(array $params, string $docComment) : FunctionInfo {
-        $namedParamTypes = $this->getNamedParamTypes($docComment);
+    public function extractFunctionInfo(array $params, string $docComment, ?ClassInfo $classInfo) : FunctionInfo {
+        $namedParamTypes = $this->getNamedParamTypes($docComment, $classInfo);
         return new FunctionInfo(
             $this->getParamTypes($params, $namedParamTypes),
-            $this->getReturnType($docComment)
+            $this->getReturnType($docComment, $classInfo)
         );
     }
 
@@ -51,14 +51,14 @@ class TypeExtractor {
         return $paramTypes;
     }
 
-    private function getNamedParamTypes(string $docComment) : array {
+    private function getNamedParamTypes(string $docComment, ?ClassInfo $classInfo) : array {
         if (!preg_match_all('/@param\s+(\S+)\s+\$(\S+)/', $docComment, $matches, PREG_SET_ORDER)) {
             return [];
         }
 
         $paramTypes = [];
         foreach ($matches as list(, $typeString, $name)) {
-            $typeInfo = $this->parseType($typeString);
+            $typeInfo = $this->parseType($typeString, $classInfo);
             if (null !== $typeInfo) {
                 $paramTypes[$name] = $typeInfo;
             }
@@ -67,15 +67,15 @@ class TypeExtractor {
         return $paramTypes;
     }
 
-    private function getReturnType(string $docComment) : ?Type {
+    private function getReturnType(string $docComment, ?ClassInfo $classInfo) : ?Type {
         if (!preg_match('/@return\s+(\S+)/', $docComment, $matches)) {
             return null;
         }
 
-        return $this->parseType($matches[1]);
+        return $this->parseType($matches[1], $classInfo);
     }
 
-    private function parseType(string $typeString) : ?Type {
+    private function parseType(string $typeString, ?ClassInfo $classInfo) : ?Type {
         $types = explode('|', $typeString);
         $resultType = null;
         $isNullable = false;
@@ -115,7 +115,11 @@ class TypeExtractor {
             // Happens if type string is "null"
             return null;
         }
-        return new Type($resultType, $isNullable);
+        $resolvedType = $resultType;
+        if ($resultType === 'self' && $classInfo !== null) {
+            $resolvedType = $classInfo->name;
+        }
+        return new Type($resultType, $resolvedType, $isNullable);
     }
 
     private function isSupportedTypeName(string $name) : bool {

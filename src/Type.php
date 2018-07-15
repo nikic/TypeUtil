@@ -5,11 +5,16 @@ namespace TypeUtil;
 class Type {
     use NoDynamicProperties;
 
+    /** @var string */
     public $name;
+    /** @var string Resolved name, differs for "self" and "parent" types */
+    public $resolvedName;
+    /** @var bool */
     public $isNullable;
 
-    public function __construct(string $name, bool $isNullable) {
+    public function __construct(string $name, string $resolvedName, bool $isNullable) {
         $this->name = $name;
+        $this->resolvedName = $resolvedName;
         $this->isNullable = $isNullable;
     }
 
@@ -28,6 +33,6 @@ class Type {
     }
 
     public function asNotNullable() : self {
-        return new self($this->name, false);
+        return new self($this->name, $this->resolvedName, false);
     }
 }

@@ -88,7 +88,7 @@ class TypeAnnotationVisitor extends MutatingVisitor {
 
         $docComment = $node->getDocComment();
         if (null !== $docComment) {
-            return $this->extractor->extractFunctionInfo($node->getParams(), $docComment->getText());
+            return $this->extractor->extractFunctionInfo($node->getParams(), $docComment->getText(), null);
         }
 
         return null;
