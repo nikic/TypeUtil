@@ -10,7 +10,7 @@ class FunctionInfo {
     /** @var Type|null */
     public $returnType;
 
-    public function __construct(array $paramTypes, $returnType) {
+    public function __construct(array $paramTypes, ?Type $returnType) {
         $this->paramTypes = $paramTypes;
         $this->returnType = $returnType;
     }

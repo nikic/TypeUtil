@@ -55,7 +55,7 @@ class Context {
 
             $typeInfo = $this->getFunctionInfoForMethod($parent, $method);
             if (null !== $typeInfo) {
-                return $typeInfo;
+                return $this->resolveFunctionInfoTypes($typeInfo);
             }
         }
         return null;
@@ -83,6 +83,15 @@ class Context {
         }
 
         return new FunctionInfo($paramTypes, null);
+    }
+
+    private function resolveFunctionInfoTypes(FunctionInfo $info) : FunctionInfo {
+        return new FunctionInfo(
+            array_map(function(?Type $type) {
+                return $type !== null ? $type->asResolvedType() : null;
+            }, $info->paramTypes),
+            $info->returnType !== null ? $info->returnType->asResolvedType() : null
+        );
     }
 
     private function mergeFunctionInfo(FunctionInfo $child, FunctionInfo $parent) : FunctionInfo {

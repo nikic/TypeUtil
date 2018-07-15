@@ -33,6 +33,16 @@ class Type {
     }
 
     public function asNotNullable() : self {
+        if (!$this->isNullable) {
+            return $this;
+        }
         return new self($this->name, $this->resolvedName, false);
+    }
+
+    public function asResolvedType() : self {
+        if ($this->name === $this->resolvedName) {
+            return $this;
+        }
+        return new self($this->resolvedName, $this->resolvedName, $this->isNullable);
     }
 }
