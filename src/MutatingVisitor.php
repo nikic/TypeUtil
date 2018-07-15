@@ -11,7 +11,7 @@ class MutatingVisitor extends NodeVisitorAbstract {
     /** @var MutableString */
     protected $code;
 
-    public function setCode(MutableString $code) {
+    public function setCode(MutableString $code) : void {
         $this->code = $code;
     }
 

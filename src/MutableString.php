@@ -14,15 +14,15 @@ class MutableString {
         $this->string = $string;
     }
 
-    public function insert(int $pos, string $newString) {
+    public function insert(int $pos, string $newString) : void {
         $this->modifications[] = [$pos, 0, $newString];
     }
 
-    public function remove(int $pos, int $len) {
+    public function remove(int $pos, int $len) : void {
         $this->modifications[] = [$pos, $len, ''];
     }
 
-    public function indexOf(string $str, int $startPos) {
+    public function indexOf(string $str, int $startPos) /* : int|false */ {
         return strpos($this->string, $str, $startPos);
     }
 

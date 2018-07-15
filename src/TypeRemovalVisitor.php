@@ -45,12 +45,12 @@ class TypeRemovalVisitor extends MutatingVisitor {
         }
     }
 
-    private function isScalarType($type) {
+    private function isScalarType($type) : bool {
         return $type instanceof Node\Identifier
             && in_array((string) $type, ['bool', 'int', 'float', 'string']);
     }
 
-    private function getTypeHintLength(int $startPos, bool $withTrailingWhitespace) {
+    private function getTypeHintLength(int $startPos, bool $withTrailingWhitespace) : int {
         $code = $this->code->getOrigString();
         // Capture typehint, skipping characters at the start
         $trailing = $withTrailingWhitespace ? '\s*' : '';

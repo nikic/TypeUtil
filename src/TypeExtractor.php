@@ -67,7 +67,7 @@ class TypeExtractor {
         return $paramTypes;
     }
 
-    private function getReturnType(string $docComment) /* : ?Type */ {
+    private function getReturnType(string $docComment) : ?Type {
         if (!preg_match('/@return\s+(\S+)/', $docComment, $matches)) {
             return null;
         }
@@ -75,7 +75,7 @@ class TypeExtractor {
         return $this->parseType($matches[1]);
     }
 
-    private function parseType(string $typeString) /* : ?Type */ {
+    private function parseType(string $typeString) : ?Type {
         $types = explode('|', $typeString);
         $resultType = null;
         $isNullable = false;

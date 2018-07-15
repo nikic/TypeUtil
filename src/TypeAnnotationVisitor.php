@@ -76,7 +76,7 @@ class TypeAnnotationVisitor extends MutatingVisitor {
         $this->code->insert($pos, ' : ' . $this->extractor->getTypeDisplayName($returnType));
     }
 
-    private function getFunctionInfo(Node\FunctionLike $node) /* : ?FunctionInfo */ {
+    private function getFunctionInfo(Node\FunctionLike $node) : ?FunctionInfo {
         if ($node instanceof Stmt\ClassMethod) {
             return $this->context->getFunctionInfoForMethod($this->className, (string) $node->name);
         }

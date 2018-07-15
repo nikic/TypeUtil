@@ -96,7 +96,7 @@ function getAddModifier(
 }
 
 function getRemoveModifier() : callable {
-    $traverser = new PhpParser\NodeTraverser(false);
+    $traverser = new PhpParser\NodeTraverser();
     $visitor = new TypeRemovalVisitor();
     $traverser->addVisitor($visitor);
 

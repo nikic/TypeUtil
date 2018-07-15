@@ -10,7 +10,7 @@ class Context {
     // [ClassName => [MethodName => FunctionInfo]]
     public $typeInfo;
 
-    public function getFunctionInfoForMethod(string $class, string $method) /* : ?FunctionInfo */ {
+    public function getFunctionInfoForMethod(string $class, string $method) : ?FunctionInfo {
         $lowerMethod = strtolower($method);
         $typeInfo = $this->typeInfo[strtolower($class)][$lowerMethod] ?? null;
         if ($lowerMethod === '__construct') {
@@ -30,7 +30,7 @@ class Context {
         return $this->mergeFunctionInfo($typeInfo, $inheritedFunctionInfo);
     }
 
-    private function getInheritedFunctionInfo(string $class, string $method) /* : ?FunctionInfo */ {
+    private function getInheritedFunctionInfo(string $class, string $method) : ?FunctionInfo {
         $parents = $this->parents[strtolower($class)] ?? [];
         foreach ($parents as $parent) {
             if (!$this->isKnownClass($parent)) {
@@ -48,7 +48,7 @@ class Context {
         return null;
     }
 
-    private function getReflectionFunctionInfo(string $class, string $method) /* : ?FunctionInfo */ {
+    private function getReflectionFunctionInfo(string $class, string $method) : ?FunctionInfo {
         try {
             $r = new \ReflectionMethod($class, $method);
         } catch (\Exception $e) {
@@ -72,14 +72,14 @@ class Context {
         return new FunctionInfo($paramTypes, null);
     }
 
-    private function mergeFunctionInfo(FunctionInfo $child, FunctionInfo $parent) {
+    private function mergeFunctionInfo(FunctionInfo $child, FunctionInfo $parent) : FunctionInfo {
         $paramTypes = $parent->paramTypes + $child->paramTypes;
         $returnType = $parent->returnType ?? $child->returnType;
 
         return new FunctionInfo($paramTypes, $returnType);
     }
 
-    private function isKnownClass(string $name) {
+    private function isKnownClass(string $name) : bool {
         return isset($this->parents[strtolower($name)]);
     }
 }
