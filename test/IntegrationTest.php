@@ -16,6 +16,7 @@ class IntegrationTest extends \PHPUnit_Framework_TestCase {
             ]
         ]);
         $parser = (new ParserFactory)->create(ParserFactory::PREFER_PHP7, $lexer);
+        $fileContext = $this->codeToFileContext($parser, $code);
 
         switch ($type) {
         case 'add':
@@ -24,17 +25,16 @@ class IntegrationTest extends \PHPUnit_Framework_TestCase {
             $nameResolver = new NameResolver();
             $extractor = new TypeExtractor($nameResolver);
 
-            $context = getContext($extractor, $nameResolver,
-                $this->codeToAstStream($parser, $code));
+            $context = getContext($extractor, $nameResolver, new \ArrayIterator([$fileContext]));
 
             $strictTypes = $type === 'add-strict';
             $php71 = $type === 'add-php71';
             $modifier = getAddModifier($nameResolver, $extractor, $context, $strictTypes, $php71);
-            $result = $modifier($code, $parser->parse($code));
+            $result = $modifier($fileContext);
             break;
         case 'remove':
             $modifier = getRemoveModifier();
-            $result = $modifier($code, $parser->parse($code));
+            $result = $modifier($fileContext);
             break;
         }
 
@@ -58,8 +58,8 @@ class IntegrationTest extends \PHPUnit_Framework_TestCase {
         }
     }
 
-    private function codeToAstStream(Parser $parser, string $code) : \Generator {
-        yield [$code, $parser->parse($code)];
+    private function codeToFileContext(Parser $parser, string $code) : FileContext {
+        return new FileContext('file.php', $code, $parser->parse($code));
     }
 
     private function canonicalize(string $string) {

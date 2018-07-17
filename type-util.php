@@ -71,13 +71,13 @@ if ('add' === $mode) {
 
     echo "Collecting context...\n";
     $context = getContext($extractor, $nameResolver,
-        astsForFiles($parser, $fileProvider()));
+        toFileContexts($parser, $fileProvider()));
 
     echo "Adding type annotations...\n";
-    $asts = astsForFiles($parser, $fileProvider());
+    $asts = toFileContexts($parser, $fileProvider());
     modifyFiles($asts, getAddModifier($nameResolver, $extractor, $context, $strictTypes, $php71));
 } else if ('remove' === $mode) {
-    $asts = astsForFiles($parser, $fileProvider());
+    $asts = toFileContexts($parser, $fileProvider());
     modifyFiles($asts, getRemoveModifier());
 }
 

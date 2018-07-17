@@ -37,7 +37,7 @@ function filesInDirs(array $dirs, string $extension) : \Generator {
     }
 }
 
-function astsForFiles(PhpParser\Parser $parser, \Traversable $files) : \Generator {
+function toFileContexts(PhpParser\Parser $parser, \Traversable $files) : \Generator {
     foreach ($files as $file) {
         $path = $file->getPathName();
         $code = file_get_contents($path);
@@ -49,21 +49,22 @@ function astsForFiles(PhpParser\Parser $parser, \Traversable $files) : \Generato
             continue;
         }
 
-        yield $path => [$code, $stmts];
+        yield new FileContext($path, $code, $stmts);
     }
 }
 
 function getContext(
-    TypeExtractor $extractor, PhpParser\NodeVisitor\NameResolver $nameResolver, \Traversable $asts
+    TypeExtractor $extractor, PhpParser\NodeVisitor\NameResolver $nameResolver, \Traversable $files
 ) : Context {
     $traverser = new NodeTraverser();
     $traverser->addVisitor($nameResolver);
 
     $visitor = new ContextCollector($extractor);
     $traverser->addVisitor($visitor);
-    
-    foreach ($asts as list(, $stmts)) {
-        $traverser->traverse($stmts);
+
+    /** @var FileContext $file */
+    foreach ($files as $file) {
+        $traverser->traverse($file->stmts);
     }
 
     return $visitor->getContext();
@@ -79,10 +80,10 @@ function getAddModifier(
     $visitor = new TypeAnnotationVisitor($context, $extractor, $php71);
     $traverser->addVisitor($visitor);
 
-    return function(string $code, array $stmts) use($visitor, $traverser, $strictTypes) {
-        $mutableCode = new MutableString($code);
+    return function(FileContext $file) use($visitor, $traverser, $strictTypes) {
+        $mutableCode = new MutableString($file->code);
         $visitor->setCode($mutableCode);
-        $traverser->traverse($stmts);
+        $traverser->traverse($file->stmts);
 
         $newCode = $mutableCode->getModifiedString();
         if (!$strictTypes) {
@@ -100,21 +101,22 @@ function getRemoveModifier() : callable {
     $visitor = new TypeRemovalVisitor();
     $traverser->addVisitor($visitor);
 
-    return function(string $code, array $stmts) use($visitor, $traverser) {
-        $mutableCode = new MutableString($code);
+    return function(FileContext $file) use($visitor, $traverser) {
+        $mutableCode = new MutableString($file->code);
         $visitor->setCode($mutableCode);
-        $traverser->traverse($stmts);
+        $traverser->traverse($file->stmts);
 
         $newCode = $mutableCode->getModifiedString();
         return preg_replace('/^<\?php declare\(strict_types=1\);/', '<?php', $newCode);
     };
 }
 
-function modifyFiles(\Traversable $asts, callable $modifier) {
-    foreach ($asts as $path => list($code, $stmts)) {
-        $newCode = $modifier($code, $stmts);
-        if ($code !== $newCode) {
-            file_put_contents($path, $newCode);
+function modifyFiles(\Traversable $files, callable $modifier) {
+    /** @var FileContext $file */
+    foreach ($files as $file) {
+        $newCode = $modifier($file);
+        if ($file->code !== $newCode) {
+            file_put_contents($file->path, $newCode);
         }
     }
 }
