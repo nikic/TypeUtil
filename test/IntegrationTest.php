@@ -25,7 +25,7 @@ class IntegrationTest extends \PHPUnit_Framework_TestCase {
             $nameResolver = new NameResolver();
             $extractor = new TypeExtractor($nameResolver);
 
-            $context = getContext($extractor, $nameResolver, new \ArrayIterator([$fileContext]));
+            $context = getContext($extractor, $nameResolver, [$fileContext]);
 
             $strictTypes = $type === 'add-strict';
             $php71 = $type === 'add-php71';

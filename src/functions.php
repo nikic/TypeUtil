@@ -37,7 +37,7 @@ function filesInDirs(array $dirs, string $extension) : \Generator {
     }
 }
 
-function toFileContexts(PhpParser\Parser $parser, \Traversable $files) : \Generator {
+function toFileContexts(PhpParser\Parser $parser, iterable $files) : \Generator {
     foreach ($files as $file) {
         $path = $file->getPathName();
         $code = file_get_contents($path);
@@ -54,7 +54,7 @@ function toFileContexts(PhpParser\Parser $parser, \Traversable $files) : \Genera
 }
 
 function getContext(
-    TypeExtractor $extractor, PhpParser\NodeVisitor\NameResolver $nameResolver, \Traversable $files
+    TypeExtractor $extractor, PhpParser\NodeVisitor\NameResolver $nameResolver, iterable $files
 ) : Context {
     $traverser = new NodeTraverser();
     $traverser->addVisitor($nameResolver);
@@ -111,7 +111,7 @@ function getRemoveModifier() : callable {
     };
 }
 
-function modifyFiles(\Traversable $files, callable $modifier) {
+function modifyFiles(iterable $files, callable $modifier) {
     /** @var FileContext $file */
     foreach ($files as $file) {
         $newCode = $modifier($file);
