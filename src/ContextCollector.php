@@ -16,13 +16,9 @@ class ContextCollector extends NodeVisitorAbstract {
     /** @var ClassInfo */
     private $classInfo;
 
-    public function __construct(TypeExtractor $extractor) {
+    public function __construct(TypeExtractor $extractor, Context $context) {
         $this->extractor = $extractor;
-        $this->context = new Context();
-    }
-
-    public function getContext() : Context {
-        return $this->context;
+        $this->context = $context;
     }
 
     public function enterNode(Node $node) {
@@ -43,15 +39,15 @@ class ContextCollector extends NodeVisitorAbstract {
             $parent = $node->extends ? $node->extends->toString() : null;
         }
 
+        $key = $this->context->getClassKey($node);
         $this->classNode = $node;
         $this->classInfo = new ClassInfo(
-            $node->namespacedName->toString(),
+            isset($node->namespacedName) ? $node->namespacedName->toString() : '',
             $parent
         );
-        $this->context->addClassInfo($this->classInfo);
+        $this->context->addClassInfo($key, $this->classInfo);
 
-        $this->context->parents[$node->namespacedName->toLowerString()]
-            = $this->getParentsOf($node);
+        $this->context->parents[$key] = $this->getParentsOf($node);
     }
 
     private function handleClassMethod(ClassMethod $node) {

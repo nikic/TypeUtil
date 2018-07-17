@@ -59,15 +59,17 @@ function getContext(
     $traverser = new NodeTraverser();
     $traverser->addVisitor($nameResolver);
 
-    $visitor = new ContextCollector($extractor);
+    $context = new Context();
+    $visitor = new ContextCollector($extractor, $context);
     $traverser->addVisitor($visitor);
 
     /** @var FileContext $file */
     foreach ($files as $file) {
+        $context->setFileContext($file);
         $traverser->traverse($file->stmts);
     }
 
-    return $visitor->getContext();
+    return $context;
 }
 
 function getAddModifier(
@@ -80,9 +82,10 @@ function getAddModifier(
     $visitor = new TypeAnnotationVisitor($context, $extractor, $php71);
     $traverser->addVisitor($visitor);
 
-    return function(FileContext $file) use($visitor, $traverser, $strictTypes) {
+    return function(FileContext $file) use($context, $visitor, $traverser, $strictTypes) {
         $mutableCode = new MutableString($file->code);
         $visitor->setCode($mutableCode);
+        $context->setFileContext($file);
         $traverser->traverse($file->stmts);
 
         $newCode = $mutableCode->getModifiedString();

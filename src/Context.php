@@ -2,8 +2,13 @@
 
 namespace TypeUtil;
 
+use PhpParser\Node\Stmt\ClassLike;
+
 class Context {
     use NoDynamicProperties;
+
+    /** @var FileContext */
+    private $currentFile;
 
     /** @var ClassInfo[] */
     private $classInfos = [];
@@ -13,25 +18,35 @@ class Context {
     // pseudo-parents possibly prior to seeing the trait.
     public $parents = [];
 
-    public function addClassInfo(ClassInfo $info) {
-        $this->classInfos[strtolower($info->name)] = $info;
+    public function setFileContext(FileContext $file) {
+        $this->currentFile = $file;
     }
 
-    public function getFunctionInfoForMethod(string $class, string $method) : ?FunctionInfo {
-        $lowerClass = strtolower($class);
+    public function getClassKey(ClassLike $node): string {
+        if (isset($node->namespacedName)) {
+            return $node->namespacedName->toLowerString();
+        }
+        return "anon#{$this->currentFile->path}#{$node->getStartFilePos()}";
+    }
+
+    public function addClassInfo(string $key, ClassInfo $info) {
+        $this->classInfos[$key] = $info;
+    }
+
+    public function getFunctionInfoForMethod(string $classKey, string $method) : ?FunctionInfo {
         $lowerMethod = strtolower($method);
-        if (!isset($this->classInfos[$lowerClass])) {
+        if (!isset($this->classInfos[$classKey])) {
             return null;
         }
 
-        $classInfo = $this->classInfos[$lowerClass];
+        $classInfo = $this->classInfos[$classKey];
         $typeInfo = $classInfo->funcInfos[$lowerMethod] ?? null;
         if ($lowerMethod === '__construct') {
             // __construct is excluded from LSP
             return $typeInfo;
         }
 
-        $inheritedFunctionInfo = $this->getInheritedFunctionInfo($class, $method);
+        $inheritedFunctionInfo = $this->getInheritedFunctionInfo($classKey, $method);
         if (null === $typeInfo) {
             return $inheritedFunctionInfo;
         }
@@ -43,8 +58,8 @@ class Context {
         return $this->mergeFunctionInfo($typeInfo, $inheritedFunctionInfo);
     }
 
-    private function getInheritedFunctionInfo(string $class, string $method) : ?FunctionInfo {
-        $parents = $this->parents[strtolower($class)] ?? [];
+    private function getInheritedFunctionInfo(string $classKey, string $method) : ?FunctionInfo {
+        $parents = $this->parents[$classKey] ?? [];
         foreach ($parents as $parent) {
             if (!$this->isKnownClass($parent)) {
                 $typeInfo = $this->getReflectionFunctionInfo($parent, $method);
@@ -53,7 +68,7 @@ class Context {
                 }
             }
 
-            $typeInfo = $this->getFunctionInfoForMethod($parent, $method);
+            $typeInfo = $this->getFunctionInfoForMethod(strtolower($parent), $method);
             if (null !== $typeInfo) {
                 return $this->resolveFunctionInfoTypes($typeInfo);
             }

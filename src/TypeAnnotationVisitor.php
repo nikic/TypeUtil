@@ -9,7 +9,8 @@ use PhpParser\Node\Stmt;
 class TypeAnnotationVisitor extends MutatingVisitor {
     private $context;
     private $extractor;
-    private $className;
+    /** @var Stmt\ClassLike */
+    private $classNode;
     private $php71;
 
     public function __construct(Context $context, TypeExtractor $extractor, bool $php71) {
@@ -20,7 +21,7 @@ class TypeAnnotationVisitor extends MutatingVisitor {
 
     public function enterNode(Node $node) {
         if ($node instanceof Stmt\ClassLike) {
-            $this->className = $node->namespacedName->toString();
+            $this->classNode = $node;
             return;
         }
 
@@ -83,7 +84,8 @@ class TypeAnnotationVisitor extends MutatingVisitor {
 
     private function getFunctionInfo(Node\FunctionLike $node) : ?FunctionInfo {
         if ($node instanceof Stmt\ClassMethod) {
-            return $this->context->getFunctionInfoForMethod($this->className, (string) $node->name);
+            return $this->context->getFunctionInfoForMethod(
+                $this->context->getClassKey($this->classNode), (string) $node->name);
         }
 
         $docComment = $node->getDocComment();
