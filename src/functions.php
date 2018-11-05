@@ -73,23 +73,22 @@ function getContext(
 }
 
 function getAddModifier(
-    PhpParser\NodeVisitor\NameResolver $nameResolver, TypeExtractor $extractor, Context $context,
-    bool $strictTypes, bool $php71
+    PhpParser\NodeVisitor\NameResolver $nameResolver, TypeExtractor $extractor, Context $context, Options $options
 ) : callable {
     $traverser = new NodeTraverser();
     $traverser->addVisitor($nameResolver);
 
-    $visitor = new TypeAnnotationVisitor($context, $extractor, $php71);
+    $visitor = new TypeAnnotationVisitor($context, $extractor, $options);
     $traverser->addVisitor($visitor);
 
-    return function(FileContext $file) use($context, $visitor, $traverser, $strictTypes) {
+    return function(FileContext $file) use($context, $visitor, $traverser, $options) {
         $mutableCode = new MutableString($file->code);
         $visitor->setCode($mutableCode);
         $context->setFileContext($file);
         $traverser->traverse($file->stmts);
 
         $newCode = $mutableCode->getModifiedString();
-        if (!$strictTypes) {
+        if (!$options->strictTypes) {
             return $newCode;
         }
 

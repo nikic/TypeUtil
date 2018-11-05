@@ -9,14 +9,15 @@ use PhpParser\Node\Stmt;
 class TypeAnnotationVisitor extends MutatingVisitor {
     private $context;
     private $extractor;
+    /** @var Options */
+    private $options;
     /** @var Stmt\ClassLike */
     private $classNode;
-    private $php71;
 
-    public function __construct(Context $context, TypeExtractor $extractor, bool $php71) {
+    public function __construct(Context $context, TypeExtractor $extractor, Options $options) {
         $this->context = $context;
         $this->extractor = $extractor;
-        $this->php71 = $php71;
+        $this->options = $options;
     }
 
     public function enterNode(Node $node) {
@@ -53,14 +54,12 @@ class TypeAnnotationVisitor extends MutatingVisitor {
                     // Type is nullable and has null default. We can add the type
                     // as a non-nullable type in this case, which is compatible with PHP 7.0
                     $type = $type->asNotNullable();
-                } else if (!$this->php71) {
-                    // No support for proper nullable types in PHP 7.0
+                } else if (!$this->options->nullableTypes) {
                     continue;
                 }
             }
 
-            if ($type->name === 'iterable' && !$this->php71) {
-                // Iterable supported since PHP 7.1 only
+            if ($type->name === 'iterable' && !$this->options->iterable) {
                 continue;
             }
 
@@ -73,8 +72,7 @@ class TypeAnnotationVisitor extends MutatingVisitor {
             return;
         }
 
-        if ($returnType->isNullable && !$this->php71) {
-            // No nullable return types in PHP 7.0
+        if ($returnType->isNullable && !$this->options->nullableTypes) {
             return;
         }
 

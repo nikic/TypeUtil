@@ -9,7 +9,7 @@ use PhpParser\ParserFactory;
 
 class IntegrationTest extends \PHPUnit_Framework_TestCase {
     /** @dataProvider provideTests */
-    public function testMutation(string $name, string $type, string $code, string $expected) {
+    public function testMutation(string $name, string $type, Options $options, string $code, string $expected) {
         $lexer = new Lexer\Emulative([
             'usedAttributes' => [
                 'comments', 'startLine', 'startFilePos', 'endFilePos',
@@ -20,17 +20,13 @@ class IntegrationTest extends \PHPUnit_Framework_TestCase {
 
         switch ($type) {
         case 'add':
-        case 'add-strict':
-        case 'add-php71':
             $nameResolver = new NameResolver();
             $extractor = new TypeExtractor($nameResolver);
 
             $context = getContext($extractor, $nameResolver, [$fileContext]);
             $context->setFileContext($fileContext);
 
-            $strictTypes = $type === 'add-strict';
-            $php71 = $type === 'add-php71';
-            $modifier = getAddModifier($nameResolver, $extractor, $context, $strictTypes, $php71);
+            $modifier = getAddModifier($nameResolver, $extractor, $context, $options);
             $result = $modifier($fileContext);
             break;
         case 'remove':
@@ -49,13 +45,17 @@ class IntegrationTest extends \PHPUnit_Framework_TestCase {
             $code = file_get_contents($name);
             list($orig, $expected) = explode('-----', $code);
 
-            $ret = preg_match('/^#!([a-z0-9-]+)\R/', $code, $matches);
+            $ret = preg_match('/^#!([^\r\n]+)/', $code, $matches);
             assert($ret === 1);
 
-            $type = $matches[1];
+            $cliParser = new CliParser();
+            [$options, $rest] = $cliParser->parseOptions(explode(' ', 'type-util --php 7.0 --no-strict-types ' . $matches[1]));
+            assert(count($rest) === 1);
+
+            $type = $rest[0];
             $orig = substr($orig, strlen($matches[0]));
 
-            yield [$name, $type, $this->canonicalize($orig), $this->canonicalize($expected)];
+            yield [$name, $type, $options, $this->canonicalize($orig), $this->canonicalize($expected)];
         }
     }
 

@@ -1,4 +1,4 @@
-#!add-php71
+#!add --nullable-types
 <?php
 
 /** @return Foo|null */

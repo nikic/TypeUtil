@@ -14,7 +14,24 @@ function error(string $msg) {
     echo <<<HELP
 $msg
 
-Usage: php ./type-util.php add|remove [--no-strict-types --php71] dir1 dir2 ...
+Usage: php ./type-util.php add|remove [--options] dir1 dir2 ...
+
+Options:
+    --php VERSION         Enable all features supported up to VERSION
+                          E.g. --php 7.1
+    --[no-]nullable-types Toggle generation of nullable types (PHP 7.1)
+    --[no-]iterable       Toggle generation of iterable type  (PHP 7.1)
+    --[no-]strict-types   Toggle use of strict_types          (PHP 7.0)
+
+Examples:
+    # Add everything that's possible!
+    php ./type-utils.php add path/to/dir
+    
+    # Only add features available in PHP 7.0
+    php ./type-utils.php --php 7.0
+    
+    # Add everything available in PHP 7.1, apart from strict types
+    php ./type-utils.php --php 7.1 --no-strict-types
 
 NOTE: Will directly modify files, assumes that you're using VCS.
 
@@ -22,35 +39,22 @@ HELP;
     exit(1);
 }
 
-// Config
-$strictTypes = true;
-$php71 = false;
-
-if ($argc <= 2) {
+$cliParser = new CliParser();
+[$options, $rest] = $cliParser->parseOptions($argv);
+if (count($rest) < 2) {
     error('At least two arguments are required.');
 }
 
-$mode = $argv[1];
+$mode = $rest[0];
 if ($mode !== 'add' && $mode !== 'remove') {
     error('Mode must be one of "add" or "remove".');
 }
 
-$dirs = [];
-foreach (array_slice($argv, 2) as $arg) {
-    if ($arg === '--no-strict-types') {
-        $strictTypes = false;
-        continue;
+$dirs = array_slice($rest, 1);
+foreach ($dirs as $dir) {
+    if (!is_dir($dir)) {
+        error("$dir is not a directory.");
     }
-
-    if ($arg === '--php71') {
-        $php71 = true;
-        continue;
-    }
-
-    if (!is_dir($arg)) {
-        error("$arg is not a directory.");
-    }
-    $dirs[] = $arg;
 }
 
 $fileProvider = function() use($dirs) : \Traversable {
@@ -75,7 +79,7 @@ if ('add' === $mode) {
 
     echo "Adding type annotations...\n";
     $asts = toFileContexts($parser, $fileProvider());
-    modifyFiles($asts, getAddModifier($nameResolver, $extractor, $context, $strictTypes, $php71));
+    modifyFiles($asts, getAddModifier($nameResolver, $extractor, $context, $options));
 } else if ('remove' === $mode) {
     $asts = toFileContexts($parser, $fileProvider());
     modifyFiles($asts, getRemoveModifier());

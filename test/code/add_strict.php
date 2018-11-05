@@ -1,4 +1,4 @@
-#!add-strict
+#!add --strict-types
 <?php
 // Foo
 ?>

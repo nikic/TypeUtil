@@ -1,4 +1,4 @@
-#!add-php71
+#!add --iterable --nullable-types
 <?php
 namespace NS;
 class A {
