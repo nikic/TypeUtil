@@ -3,13 +3,19 @@
 namespace TypeUtil;
 
 class Options {
+    /* PHP 7.0 */
     /** @var bool */
     public $strictTypes = false;
 
+    /* PHP 7.1 */
     /** @var bool */
     public $nullableTypes = false;
     /** @var bool */
     public $iterable = false;
+
+    /* PHP 7.2 */
+    /** @var bool */
+    public $object = false;
 
     public static function fromPhpVersion(string $version) {
         $options = new Options();
@@ -23,6 +29,10 @@ class Options {
             $options->iterable = true;
         }
 
+        if (version_compare($version, '7.2', '>=')) {
+            $options->object = true;
+        }
+
         return $options;
     }
 
@@ -31,6 +41,7 @@ class Options {
             'strict-types' => 'strictTypes',
             'nullable-types' => 'nullableTypes',
             'iterable' => 'iterable',
+            'object' => 'object',
         ];
 
         if (!preg_match('/--(no-)?([a-z-]+)/', $option, $matches)) {

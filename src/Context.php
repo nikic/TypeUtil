@@ -168,6 +168,10 @@ class Context {
             return $a->name === 'array';
         }
 
+        if ($b->name === 'object') {
+            return $a->isClassHint();
+        }
+
         // We don't check for class subtypes, as PHP does not support this in LSP checks
         return false;
     }

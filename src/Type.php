@@ -26,6 +26,7 @@ class Type {
             case 'string':
             case 'array':
             case 'iterable':
+            case 'object':
                 return false;
             default:
                 return true;

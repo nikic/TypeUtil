@@ -63,6 +63,10 @@ class TypeAnnotationVisitor extends MutatingVisitor {
                 continue;
             }
 
+            if ($type->name === 'object' && !$this->options->object) {
+                continue;
+            }
+
             $startPos = $param->getStartFilePos();
             $this->code->insert($startPos, $this->extractor->getTypeDisplayName($type) . ' ');
         }

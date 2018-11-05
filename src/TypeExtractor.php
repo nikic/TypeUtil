@@ -149,6 +149,8 @@ class TypeExtractor {
                 return 'array';
             case 'iterable':
                 return 'iterable';
+            case 'object':
+                return 'object';
             default:
                 if ($name[0] === '\\') {
                     return substr($name, 1);

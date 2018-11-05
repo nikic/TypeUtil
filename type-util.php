@@ -19,6 +19,7 @@ Usage: php ./type-util.php add|remove [--options] dir1 dir2 ...
 Options:
     --php VERSION         Enable all features supported up to VERSION
                           E.g. --php 7.1
+    --[no-]object         Toggle generation of object type    (PHP 7.2)
     --[no-]nullable-types Toggle generation of nullable types (PHP 7.1)
     --[no-]iterable       Toggle generation of iterable type  (PHP 7.1)
     --[no-]strict-types   Toggle use of strict_types          (PHP 7.0)
