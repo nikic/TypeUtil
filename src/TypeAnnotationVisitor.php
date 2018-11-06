@@ -59,11 +59,7 @@ class TypeAnnotationVisitor extends MutatingVisitor {
                 }
             }
 
-            if ($type->name === 'iterable' && !$this->options->iterable) {
-                continue;
-            }
-
-            if ($type->name === 'object' && !$this->options->object) {
+            if (!$this->isTypeSupported($type)) {
                 continue;
             }
 
@@ -77,6 +73,10 @@ class TypeAnnotationVisitor extends MutatingVisitor {
         }
 
         if ($returnType->isNullable && !$this->options->nullableTypes) {
+            return;
+        }
+
+        if (!$this->isTypeSupported($returnType)) {
             return;
         }
 
@@ -101,6 +101,16 @@ class TypeAnnotationVisitor extends MutatingVisitor {
     private function isNullConstant(Node\Expr $node) : bool {
         return $node instanceof Node\Expr\ConstFetch
             && strtolower($node->name->toString()) === 'null';
+    }
+
+    private function isTypeSupported(Type $type) {
+        if ($type->name === 'iterable' && !$this->options->iterable) {
+            return false;
+        }
+        if ($type->name === 'object' && !$this->options->object) {
+            return false;
+        }
+        return true;
     }
 }
 
