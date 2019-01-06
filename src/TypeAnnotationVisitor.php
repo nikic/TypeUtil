@@ -106,7 +106,9 @@ class TypeAnnotationVisitor extends MutatingVisitor {
         $prop = $node->props[0];
         $type = $this->context->getPropertyType(
             $this->context->getClassKey($this->classNode), $prop->name->toString());
-        if ($type === null || !$this->isTypeSupported($type)) {
+
+        // callable is not allowed in property types
+        if ($type === null || !$this->isTypeSupported($type) || $type->name === 'callable') {
             return;
         }
 

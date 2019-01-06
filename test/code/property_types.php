@@ -6,6 +6,8 @@ class Test {
     public $foo;
     /** @var Foo|null */
     public $bar;
+    /** @var callable */
+    public $callback;
 }
 
 class A {
@@ -25,6 +27,8 @@ class Test {
     public int $foo;
     /** @var Foo|null */
     public ?Foo $bar;
+    /** @var callable */
+    public $callback;
 }
 
 class A {
