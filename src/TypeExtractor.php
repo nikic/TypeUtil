@@ -155,6 +155,8 @@ class TypeExtractor {
                 return 'string';
             case 'array':
                 return 'array';
+            case 'callable':
+                return 'callable';
             case 'iterable':
                 return 'iterable';
             case 'object':
