@@ -17,6 +17,10 @@ class Options {
     /** @var bool */
     public $object = false;
 
+    /* PHP 7.4 */
+    /** @var bool */
+    public $propertyTypes = false;
+
     public static function fromPhpVersion(string $version) {
         $options = new Options();
 
@@ -33,6 +37,10 @@ class Options {
             $options->object = true;
         }
 
+        if (version_compare($version, '7.4', '>=')) {
+            $options->propertyTypes = true;
+        }
+
         return $options;
     }
 
@@ -42,6 +50,7 @@ class Options {
             'nullable-types' => 'nullableTypes',
             'iterable' => 'iterable',
             'object' => 'object',
+            'property-types' => 'propertyTypes',
         ];
 
         if (!preg_match('/--(no-)?([a-z-]+)/', $option, $matches)) {

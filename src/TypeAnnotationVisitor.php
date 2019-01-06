@@ -26,10 +26,18 @@ class TypeAnnotationVisitor extends MutatingVisitor {
             return;
         }
 
-        if (!$node instanceof Node\FunctionLike) {
+        if ($node instanceof Node\FunctionLike) {
+            $this->enterFunctionLike($node);
             return;
         }
 
+        if ($node instanceof Stmt\Property) {
+            $this->enterProperty($node);
+            return;
+        }
+    }
+
+    private function enterFunctionLike(Node\FunctionLike $node): void {
         $typeInfo = $this->getFunctionInfo($node);
         if (null === $typeInfo) {
             return;
@@ -82,6 +90,28 @@ class TypeAnnotationVisitor extends MutatingVisitor {
 
         $pos = $this->getReturnTypeHintPos($node);
         $this->code->insert($pos, ' : ' . $this->extractor->getTypeDisplayName($returnType));
+    }
+
+    private function enterProperty(Stmt\Property $node) {
+        if ($node->type !== null) {
+            // Already has a type
+            return;
+        }
+
+        if (count($node->props) !== 1) {
+            // We don't handle multi-properties
+            return;
+        }
+
+        $prop = $node->props[0];
+        $type = $this->context->getPropertyType(
+            $this->context->getClassKey($this->classNode), $prop->name->toString());
+        if ($type === null || !$this->isTypeSupported($type)) {
+            return;
+        }
+
+        $pos = $prop->getStartFilePos();
+        $this->code->insert($pos, $this->extractor->getTypeDisplayName($type) . ' ');
     }
 
     private function getFunctionInfo(Node\FunctionLike $node) : ?FunctionInfo {

@@ -8,7 +8,9 @@ class ClassInfo {
     /** @var string|null */
     public $parent;
     /** @var FunctionInfo[] */
-    public $funcInfos;
+    public $funcInfos = [];
+    /** @var Type[] */
+    public $propTypes = [];
 
     public function __construct(string $name, ?string $parent) {
         $this->name = $name;

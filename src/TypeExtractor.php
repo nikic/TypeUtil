@@ -24,6 +24,14 @@ class TypeExtractor {
         );
     }
 
+    public function getPropertyType(string $docComment, ClassInfo $classInfo) : ?Type {
+        if (!preg_match('/@var\s+(\S+)/', $docComment, $matches)) {
+            return null;
+        }
+
+        return $this->parseType($matches[1], $classInfo);
+    }
+
     public function getTypeDisplayName(Type $type) : string {
         $prefix = $type->isNullable ? '?' : '';
         return $prefix . $this->getBaseTypeDisplayName($type);

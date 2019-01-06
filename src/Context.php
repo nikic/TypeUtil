@@ -58,6 +58,12 @@ class Context {
         return $this->mergeFunctionInfo($typeInfo, $inheritedFunctionInfo);
     }
 
+    public function getPropertyType(string $classKey, string $property) : ?Type {
+        // TODO Handle invariance
+        $classInfo = $this->classInfos[$classKey];
+        return $classInfo->propTypes[$property] ?? null;
+    }
+
     private function getInheritedFunctionInfo(string $classKey, string $method) : ?FunctionInfo {
         $parents = $this->parents[$classKey] ?? [];
         foreach ($parents as $parent) {

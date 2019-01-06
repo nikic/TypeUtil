@@ -5,7 +5,7 @@ namespace TypeUtil;
 use PhpParser\NodeVisitorAbstract;
 use PhpParser\Node;
 use PhpParser\Node\Name;
-use PhpParser\Node\Stmt\{ClassLike, ClassMethod, Class_, Interface_, TraitUse};
+use PhpParser\Node\Stmt\{ClassLike, ClassMethod, Class_, Interface_, Property, TraitUse};
 
 class ContextCollector extends NodeVisitorAbstract {
     use NoDynamicProperties;
@@ -30,6 +30,8 @@ class ContextCollector extends NodeVisitorAbstract {
             foreach ($node->traits as $trait) {
                 $this->handleTraitUse($trait);
             }
+        } else if ($node instanceof Property) {
+            $this->handleProperty($node);
         }
     }
 
@@ -72,6 +74,21 @@ class ContextCollector extends NodeVisitorAbstract {
             $this->context->parents[$lowerName] ?? [],
             $this->getParentsOf($this->classNode)
         ));
+    }
+
+    private function handleProperty(Property $node) {
+        $docComment = $node->getDocComment();
+        if ($docComment === null) {
+            return;
+        }
+
+        if (count($node->props) !== 1) {
+            return;
+        }
+
+        $prop = $node->props[0];
+        $this->classInfo->propTypes[$prop->name->toString()]
+            = $this->extractor->getPropertyType($docComment->getText(), $this->classInfo);
     }
 
     private function getParentsOf(ClassLike $node) : array {
