@@ -8,6 +8,14 @@ class Test {
     public $bar;
 }
 
+class A {
+    /** @var int */
+    public $foo;
+}
+class B extends A {
+    public $foo;
+}
+
 ?>
 -----
 <?php
@@ -17,6 +25,14 @@ class Test {
     public int $foo;
     /** @var Foo|null */
     public ?Foo $bar;
+}
+
+class A {
+    /** @var int */
+    public int $foo;
+}
+class B extends A {
+    public int $foo;
 }
 
 ?>

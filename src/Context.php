@@ -35,11 +35,7 @@ class Context {
 
     public function getFunctionInfoForMethod(string $classKey, string $method) : ?FunctionInfo {
         $lowerMethod = strtolower($method);
-        if (!isset($this->classInfos[$classKey])) {
-            return null;
-        }
-
-        $classInfo = $this->classInfos[$classKey];
+        $classInfo = $this->classInfos[$classKey] ?? null;
         $typeInfo = $classInfo->funcInfos[$lowerMethod] ?? null;
         if ($lowerMethod === '__construct') {
             // __construct is excluded from LSP
@@ -59,9 +55,31 @@ class Context {
     }
 
     public function getPropertyType(string $classKey, string $property) : ?Type {
+        $classInfo = $this->classInfos[$classKey] ?? null;
+        $type = $classInfo->propTypes[$property] ?? null;
+        $inheritedType = $this->getInheritedPropertyType($classKey, $property);
+        if ($type === null) {
+            return $inheritedType;
+        }
         // TODO Handle invariance
-        $classInfo = $this->classInfos[$classKey];
-        return $classInfo->propTypes[$property] ?? null;
+        return $type;
+    }
+
+    private function getInheritedPropertyType(string $classKey, string $property) : ?Type {
+        $parents = $this->parents[$classKey] ?? [];
+        foreach ($parents as $parent) {
+            if (!$this->isKnownClass($parent)) {
+                // Could get property type from reflection here, but there are no internal classes using property types
+                // right now...
+                continue;
+            }
+
+            $type = $this->getPropertyType(strtolower($parent), $property);
+            if (null !== $type) {
+                return $type;
+            }
+        }
+        return null;
     }
 
     private function getInheritedFunctionInfo(string $classKey, string $method) : ?FunctionInfo {
