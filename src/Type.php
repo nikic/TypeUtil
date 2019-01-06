@@ -25,6 +25,7 @@ class Type {
             case 'float':
             case 'string':
             case 'array':
+            case 'callable':
             case 'iterable':
             case 'object':
                 return false;
