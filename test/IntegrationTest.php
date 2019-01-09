@@ -7,7 +7,7 @@ use PhpParser\NodeVisitor\NameResolver;
 use PhpParser\Parser;
 use PhpParser\ParserFactory;
 
-class IntegrationTest extends \PHPUnit_Framework_TestCase {
+class IntegrationTest extends \PHPUnit\Framework\TestCase {
     /** @dataProvider provideTests */
     public function testMutation(string $name, string $type, Options $options, string $code, string $expected) {
         $lexer = new Lexer\Emulative([
