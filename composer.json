@@ -1,12 +1,15 @@
 {
     "require": {
-		"php": "^7.1",
+        "php": "^7.1",
         "nikic/php-parser": "4.2.x@dev"
     },
-	"autoload": {
-		"psr-4": {
-			"TypeUtil\\": "src/"
-		},
-		"files": ["src/functions.php"]
-	}
+    "autoload": {
+        "psr-4": {
+            "TypeUtil\\": "src/"
+        },
+        "files": ["src/functions.php"]
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^7"
+    }
 }
