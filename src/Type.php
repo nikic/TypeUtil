@@ -18,6 +18,10 @@ class Type {
         $this->isNullable = $isNullable;
     }
 
+    public static function fromString(string $name, bool $isNullable) {
+        return new self($name, $name, $isNullable);
+    }
+
     public function isClassHint() : bool {
         switch ($this->name) {
             case 'bool':

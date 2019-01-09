@@ -109,12 +109,13 @@ class Context {
 
         $paramTypes = [];
         foreach ($r->getParameters() as $param) {
+            $isNullable = $param->allowsNull();
             if ($param->isArray()) {
-                $type = 'array';
+                $type = Type::fromString('array', $isNullable);
             } else if ($param->isCallable()) {
-                $type = 'callable';
+                $type = Type::fromString('callable', $isNullable);
             } else if (null !== $class = $param->getClass()) {
-                $type = $class->name;
+                $type = Type::fromString($class->name, $isNullable);
             } else {
                 $type = null;
             }
