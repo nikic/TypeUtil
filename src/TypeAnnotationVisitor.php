@@ -93,8 +93,8 @@ class TypeAnnotationVisitor extends MutatingVisitor {
     }
 
     private function enterProperty(Stmt\Property $node) {
-        if ($node->type !== null) {
-            // Already has a type
+        if ($node->type !== null || !$this->options->propertyTypes) {
+            // Already has a type or property types not desired.
             return;
         }
 
