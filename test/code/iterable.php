@@ -21,11 +21,11 @@ function test2($a) {}
 namespace NS;
 class A {
     /** @return iterable */
-    public function getIterable() : iterable {}
+    public function getIterable(): iterable {}
 }
 class B extends A {
     /** @return array */
-    public function getIterable() : array {}
+    public function getIterable(): array {}
 }
 
 /** @param \Traversable|array $a */

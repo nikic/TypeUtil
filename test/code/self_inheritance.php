@@ -25,16 +25,16 @@ class P {}
 
 class A extends P {
     /** @return self */
-    public function foo() : self {}
+    public function foo(): self {}
 
     /** @return parent */
-    public function bar() : parent {}
+    public function bar(): parent {}
 }
 
 class B extends A {
-    public function foo() : A {}
+    public function foo(): A {}
 
-    public function bar() : P {}
+    public function bar(): P {}
 }
 
 ?>

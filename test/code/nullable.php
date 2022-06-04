@@ -15,7 +15,7 @@ function test2($a, $b = null) {}
 <?php
 
 /** @return Foo|null */
-function test() : ?Foo {}
+function test(): ?Foo {}
 
 /**
  * @param Foo|null $a

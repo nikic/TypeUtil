@@ -15,10 +15,10 @@ class B extends A {
 namespace NS;
 class A {
     /** @return object */
-    public function getObject() : object {}
+    public function getObject(): object {}
 }
 class B extends A {
     /** @return Foo */
-    public function getObject() : Foo {}
+    public function getObject(): Foo {}
 }
 ?>

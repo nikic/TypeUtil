@@ -89,7 +89,7 @@ class TypeAnnotationVisitor extends MutatingVisitor {
         }
 
         $pos = $this->getReturnTypeHintPos($node);
-        $this->code->insert($pos, ' : ' . $this->extractor->getTypeDisplayName($returnType));
+        $this->code->insert($pos, ': ' . $this->extractor->getTypeDisplayName($returnType));
     }
 
     private function enterProperty(Stmt\Property $node) {

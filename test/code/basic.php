@@ -30,7 +30,7 @@ class Number {
  * @param int $b
  * @return int
  */
-function add(int $a, int $b) : int {
+function add(int $a, int $b): int {
     return $a + $b;
 }
 
@@ -40,7 +40,7 @@ class Number {
      * @param int $b
      * @return int
      */
-    public function add(int $a, int $b) : int {
+    public function add(int $a, int $b): int {
         return $a + $b;
     }
 }

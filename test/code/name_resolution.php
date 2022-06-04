@@ -34,21 +34,21 @@ use ABC\Baz;
 use ABC\{XYZ};
 
 /** @return \Bar */
-function test1() : \Bar {}
+function test1(): \Bar {}
 
 /** @return Bar */
-function test2() : Bar {}
+function test2(): Bar {}
 
 /** @return Bar\Baz */
-function test3() : Bar\Baz {}
+function test3(): Bar\Baz {}
 
 /** @return Baz */
-function test4() : Baz {}
+function test4(): Baz {}
 
 /** @return Baz\Foo */
-function test5() : Baz\Foo {}
+function test5(): Baz\Foo {}
 
 /** @return XYZ */
-function test6() : XYZ {}
+function test6(): XYZ {}
 
 ?>

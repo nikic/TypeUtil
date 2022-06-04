@@ -32,13 +32,13 @@ class C extends B {
 
 class A {
     /** @return A */
-    public function test() : A {
+    public function test(): A {
         return $this;
     }
 }
 
 class B extends A {
-    public function test() : A {
+    public function test(): A {
         return $this;
     }
 }
@@ -50,7 +50,7 @@ class C extends B {
      *
      * @return C
      */
-    public function test() : A {
+    public function test(): A {
         return $this;
     }
 }
