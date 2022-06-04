@@ -1,7 +1,7 @@
 {
     "require": {
         "php": "^7.1",
-        "nikic/php-parser": "4.2.x@dev"
+        "nikic/php-parser": "^4.13"
     },
     "autoload": {
         "psr-4": {
